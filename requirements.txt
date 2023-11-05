@@ -9,3 +9,6 @@ python-decouple==3.8
 pytz==2023.3.post1
 sqlparse==0.4.4
 tzdata==2023.3
+mysqlclient==2.2.0
+djoser==0.5.4
+django-utils-six==2.0
