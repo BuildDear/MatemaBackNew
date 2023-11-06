@@ -9,4 +9,5 @@ urlpatterns = [
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     path('auth/verify/<uidb64>/<token>/', views.activate_account, name='activate_account'),
+    path('task/', include('Task.urls')),
 ]

@@ -1,4 +1,5 @@
 from django.db import models
+from Task.models import *
 
 
 class UserRole(models.Model):
@@ -26,50 +27,3 @@ class User(models.Model):
 
     class Meta:
         db_table = "user"
-
-
-class TypeAnswer(models.Model):
-    name = models.CharField(max_length=30)
-
-    class Meta:
-        db_table = "type_answer"
-
-
-class Them(models.Model):
-    name = models.CharField(max_length=30)
-
-    class Meta:
-        db_table = "them"
-
-
-class Task(models.Model):
-    name = models.CharField(max_length=100, unique=True)
-    text = models.TextField()
-    image_url = models.CharField(max_length=255)
-    point = models.IntegerField()
-    them = models.ForeignKey(Them, on_delete=models.CASCADE)
-    type = models.ForeignKey(TypeAnswer, on_delete=models.CASCADE)
-    answer = models.TextField()
-
-    class Meta:
-        db_table = "task"
-
-
-class TaskList(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    is_current = models.BooleanField()
-    is_done = models.BooleanField()
-    is_weekly = models.BooleanField()
-    point = models.IntegerField(null=True)
-
-    class Meta:
-        db_table = "task_list"
-
-
-class UserThem(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    them = models.ForeignKey(Them, on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = "user_them"
