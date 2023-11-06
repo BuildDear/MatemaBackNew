@@ -37,7 +37,3 @@ def activate_account(request, uidb64, token):
         return HttpResponse('Thank you for your email confirmation. Now you can login your account.')
     else:
         return HttpResponse('Activation link is invalid!')
-
-
-def test():
-    pass
