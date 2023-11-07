@@ -4,9 +4,15 @@ from rest_framework import status
 from .serializers import *
 
 
+class TaskView(APIView):
+    def get(self, request):
+        tasks = Task.objects.all()
+        serializer = TaskSerializer(tasks, many=True)
+        return JsonResponse(serializer.data)
+
+
 class TaskCreateView(APIView):
-    @staticmethod
-    def create_task(request, *args, **kwargs):
+    def create(self, request, *args, **kwargs):
         serializer = TaskCreateSerializer(data=request.data)
         if serializer.is_valid():
             task = serializer.create_task(serializer.validated_data)
@@ -15,57 +21,44 @@ class TaskCreateView(APIView):
 
 
 class TaskDeleteView(APIView):
-    @staticmethod
-    def delete_task(request, *args, **kwargs):
-        # Ваш серіалізатор очікує 'id', тому ми отримаємо 'task_id' з 'kwargs'
+    def delete(self, request, *args, **kwargs):
         task_id = kwargs.get('task_id', None)
         if task_id is not None:
-            # Створюємо екземпляр серіалізатора з даними запиту
-            serializer = TaskDeleteSerializer(data={'id': task_id})
-            # Перевіряємо, чи валідний 'id'
-            if serializer.is_valid():
-                result = serializer.delete_task(task_id)
-                if result == "Successful delete!":
-                    return JsonResponse({"message": result}, status=status.HTTP_204_NO_CONTENT)
-                else:
-                    return JsonResponse({"message": result}, status=status.HTTP_404_NOT_FOUND)
-            return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            try:
+                task = Task.objects.get(id=task_id)
+                task.delete()
+                return JsonResponse({"message": "Successful delete!"}, status=status.HTTP_204_NO_CONTENT)
+            except Task.DoesNotExist:
+                return JsonResponse({"message": "Invalid task_id."}, status=status.HTTP_404_NOT_FOUND)
         else:
             return JsonResponse({"message": "Task ID is required."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ThemCreateView(APIView):
-    @staticmethod
-    def create_them(request, *args, **kwargs):
-        # Витягуємо ім'я з даних запиту
-        name = request.data.get('name')
-        # Перевіряємо, чи ім'я було надано
-        if name:
-            # Створюємо Them за допомогою серіалізатора
-            them = ThemCreateSerializer.create_them(name)
-            # Повертаємо серіалізовані дані новоствореного Them
-            serializer = ThemCreateSerializer(them)
-            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return JsonResponse(
-                {"message": "Name is required for creating a Them."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+class ThemeView(APIView):
+    def get(self, request):
+        theme = Theme.objects.all()
+        serializer = ThemeSerializer(theme, many=True)
+        return JsonResponse(serializer.data)
 
 
-class ThemDeleteView(APIView):
-    @staticmethod
-    def delete(request, *args, **kwargs):
-        them_id = kwargs.get('them_id')
-        if them_id is None:
-            return JsonResponse({'message': 'Missing them_id.'}, status=status.HTTP_400_BAD_REQUEST)
+class ThemeCreateView(APIView):
+    def create(self, request):
+        serializer = ThemeCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            theme = serializer.create_theme(serializer.validated_data)
+            return JsonResponse(ThemeCreateSerializer(theme).data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = ThemDeleteSerializer(data={'id': them_id})
-        if serializer.is_valid(raise_exception=True):
+
+class ThemeDeleteView(APIView):
+    def delete(self, request, **kwargs):
+        theme_id = kwargs.get('them_id')
+        if theme_id is not None:
             try:
-                result = serializer.delete_them(them_id)
-                return JsonResponse(result, status=status.HTTP_204_NO_CONTENT)
-            except ValidationError as e:
-                return JsonResponse({'message': str(e)}, status=status.HTTP_404_NOT_FOUND)
+                theme = Theme.objects.get(id=theme_id)
+                theme.delete()
+                return JsonResponse({"message": "Successful delete!"}, status=status.HTTP_204_NO_CONTENT)
+            except Theme.DoesNotExist:
+                return JsonResponse({"message": "Invalid theme_id."}, status=status.HTTP_404_NOT_FOUND)
         else:
-            return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({"message": "theme_id is required."}, status=status.HTTP_400_BAD_REQUEST)
