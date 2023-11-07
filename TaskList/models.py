@@ -2,6 +2,9 @@ from django.db import models
 from Task.models import *
 from User.models import *
 
+from Matema.Task.models import Task, Them
+from Matema.User.models import User
+
 
 class TaskList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

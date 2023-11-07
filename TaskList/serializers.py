@@ -3,6 +3,8 @@ from .models import *
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from djoser.serializers import UserCreateSerializer
 
+from ..Task.models import Task
+
 
 class TaskListCreateSerializer(serializers.ModelSerializer):
 
