@@ -74,4 +74,3 @@ class ThemeDeleteView(APIView):
 class ThemeEditView(generics.RetrieveUpdateAPIView):
     queryset = Theme.objects.all()
     serializer_class = ThemeSerializer
-    
