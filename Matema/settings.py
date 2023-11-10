@@ -64,12 +64,12 @@ WSGI_APPLICATION = 'Matema.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': config('SQL_NAME'),
         'USER': config('SQL_USER'),
-        'PASSWORD': '',
-        'HOST': config('SQL_HOST'),  # or your MySQL host address
-        'PORT': config('SQL_PORT'),  # or your MySQL port
+        'PASSWORD': config('SQL_PASSWORD'),
+        'HOST': config('SQL_HOST'),  # or your PostgreSQL host address
+        'PORT': config('SQL_PORT'),  # or your PostgreSQL port
     }
 }
 
