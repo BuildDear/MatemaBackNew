@@ -1,5 +1,5 @@
 from django.db import models
-import User
+from django.contrib.auth.models import User
 
 
 class TypeAnswer(models.Model):

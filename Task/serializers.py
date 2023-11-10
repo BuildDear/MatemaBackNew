@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import Task, TypeAnswer, Theme
 from django.core.exceptions import ValidationError
-from djoser.serializers import UserCreateSerializer
 
 
 class TaskSerializer(serializers.ModelSerializer):
