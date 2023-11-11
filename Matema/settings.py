@@ -22,9 +22,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    'User.apps.UserConfig',
     'rest_framework_simplejwt',
     'djoser',
+
+    'Task',
+    'User.apps.UserConfig',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -64,7 +66,7 @@ WSGI_APPLICATION = 'Matema.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': config('SQL_NAME'),
         'USER': config('SQL_USER'),
         'PASSWORD': '',
@@ -151,7 +153,3 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'matema.group@gmail.com'
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-
-
-
-

@@ -9,3 +9,5 @@ python-decouple==3.8
 pytz==2023.3.post1
 sqlparse==0.4.4
 tzdata==2023.3
+
+djoser~=0.5.4
