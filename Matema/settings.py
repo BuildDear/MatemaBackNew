@@ -27,6 +27,7 @@ INSTALLED_APPS = [
 
     'Task',
     'User.apps.UserConfig',
+    'Manager'
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
