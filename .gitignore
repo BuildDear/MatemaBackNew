@@ -68,4 +68,7 @@ db.sqlite3-journal
 docs/_build/
 
 # PyBuilder
+<<<<<<< HEAD
 target/
+=======
+>>>>>>> main
