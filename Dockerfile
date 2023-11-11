@@ -1,5 +1,4 @@
 
-
 # Копіювання скрипту entrypoint.sh
 COPY entrypoint.sh /usr/src/app/entrypoint.sh
 
