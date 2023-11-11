@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from rest_framework.views import APIView
 from rest_framework import status
-from Task.serializers import *
+from .serializer import *
 from Task.models import *
 from rest_framework import generics
 

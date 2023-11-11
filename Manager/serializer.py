@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Task, TypeAnswer, Theme
+from Task.models import Task, TypeAnswer, Theme
 from django.core.exceptions import ValidationError
 
 
