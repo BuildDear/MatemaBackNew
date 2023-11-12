@@ -9,7 +9,7 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['matema-dev-ncrzmugb6q-lm.a.run.app', 'matemabacknew-ncrzmugb6q-lm.a.run.app', 'localhost', '127.0.0.1',]
+ALLOWED_HOSTS = ['*']
 
 
 INSTALLED_APPS = [
