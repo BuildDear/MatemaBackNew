@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+from Matema import settings
+
 
 class TypeAnswer(models.Model):
     name = models.CharField(max_length=30)
@@ -30,7 +32,7 @@ class Task(models.Model):
 
 
 class TaskList(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     is_current = models.BooleanField()
     is_done = models.BooleanField()
@@ -42,7 +44,7 @@ class TaskList(models.Model):
 
 
 class UserTheme(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     them = models.ForeignKey(Theme, on_delete=models.CASCADE)
 
     class Meta:

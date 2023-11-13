@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
-from Matema.Task.models import Task, Theme, TypeAnswer
+from Task.models import Task, Theme, TypeAnswer
 
 
 class TaskSerializer(serializers.ModelSerializer):

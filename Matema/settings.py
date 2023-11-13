@@ -67,7 +67,7 @@ WSGI_APPLICATION = 'Matema.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': config('SQL_ENGINE'),
         'NAME': config('SQL_NAME'),
         'USER': config('SQL_USER'),
         'PASSWORD': config('SQL_PASSWORD'),

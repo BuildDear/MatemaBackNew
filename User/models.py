@@ -1,29 +1,19 @@
+from django.contrib.auth.models import AbstractUser
 from django.db import models
-from Task.models import *
 
 
 class UserRole(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, default=0)
 
     class Meta:
         db_table = "user_role"
 
 
-class User(models.Model):
-    username = models.CharField(max_length=30, unique=True)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-    email = models.EmailField(max_length=254)
-    image_url = models.CharField(max_length=255)
-    password = models.CharField(max_length=128)
-    score = models.IntegerField()
-    count_tasks = models.IntegerField()
-    role = models.ForeignKey(UserRole, on_delete=models.CASCADE)
-    is_active = models.BooleanField()
-    is_superuser = models.BooleanField()
-
-    USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = ['email']
+class User(AbstractUser):
+    image_url = models.CharField(max_length=255, default=None)
+    score = models.IntegerField(default=0)
+    count_tasks = models.IntegerField(default=0)
+    role = models.ForeignKey(UserRole, on_delete=models.SET_NULL, default=1, null=True)
 
     class Meta:
         db_table = "user"
