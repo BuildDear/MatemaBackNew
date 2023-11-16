@@ -8,7 +8,7 @@ urlpatterns = [
     path('task/<int:pk>/', TaskEditView.as_view(), name='task-edit'),
 
     path('theme/', ThemeView.as_view(), name='view-theme'),
-    path('theme/', ThemeCreateView.as_view(), name='create-theme'),
+    path('theme_create/', ThemeCreateView.as_view(), name='create-theme'),
     path('theme/<int:theme_id>/', ThemeDeleteView.as_view(), name='delete-theme'),
     path('theme/<int:pk>/', ThemeEditView.as_view(), name='task-edit'),
 ]
