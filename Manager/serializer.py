@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from Task.models import Task, Theme, TypeAnswer
 
+from User.models import User
+
 
 class TaskSerializer(serializers.ModelSerializer):
     """List of Task"""
@@ -73,4 +75,20 @@ class ThemeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Theme
+        fields = "__all__"
+
+
+class UserListSerializer(serializers.ModelSerializer):
+    """List of users"""
+
+    class Meta:
+        model = User
+        fields = "__all__"
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    """All user"""
+
+    class Meta:
+        model = User
         fields = "__all__"
