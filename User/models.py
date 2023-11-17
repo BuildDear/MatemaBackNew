@@ -15,7 +15,7 @@ class User(AbstractUser):
     count_tasks = models.IntegerField(default=0)
     role = models.ForeignKey(UserRole, on_delete=models.SET_NULL, default=1, null=True)
 
-    REQUIRED_FIELDS = ('username', 'email', 'first_name', 'last_name', 'password')
+    REQUIRED_FIELDS = ('email', 'first_name', 'last_name', 'password')
 
     class Meta:
         db_table = "user"
