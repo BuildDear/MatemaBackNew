@@ -1,11 +1,11 @@
 from django.http import JsonResponse
-from rest_framework.generics import ListAPIView, RetrieveAPIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework import status
 from .serializer import *
 
 from rest_framework import generics
+from rest_framework.response import Response
 
 from User.models import User
 
@@ -18,10 +18,12 @@ class TasksView(APIView):
 
 
 class TaskCreateView(APIView):
-    def create(self, request, *args, **kwargs):
+    permission_classes = (AllowAny,)
+
+    def post(self, request, *args, **kwargs):
         serializer = TaskCreateSerializer(data=request.data)
         if serializer.is_valid():
-            task = serializer.create_task(serializer.validated_data)
+            task = serializer.create(serializer.validated_data)
             return JsonResponse(TaskCreateSerializer(task).data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -53,12 +55,14 @@ class ThemeView(APIView):
 
 
 class ThemeCreateView(APIView):
-    def create(self, request):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
         serializer = ThemeCreateSerializer(data=request.data)
         if serializer.is_valid():
-            theme = serializer.create_theme(serializer.validated_data)
-            return JsonResponse(ThemeCreateSerializer(theme).data, status=status.HTTP_201_CREATED)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            theme = serializer.save()
+            return Response(ThemeCreateSerializer(theme).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ThemeDeleteView(APIView):
