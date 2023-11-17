@@ -9,7 +9,8 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -22,9 +23,12 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders',
-    'User.apps.UserConfig',
     'rest_framework_simplejwt',
     'djoser',
+
+    'Task',
+    'User.apps.UserConfig',
+    'Manager'
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
@@ -64,12 +68,12 @@ WSGI_APPLICATION = 'Matema.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
+        'ENGINE': config('SQL_ENGINE'),
         'NAME': config('SQL_NAME'),
         'USER': config('SQL_USER'),
-        'PASSWORD': '',
-        'HOST': config('SQL_HOST'),  # or your MySQL host address
-        'PORT': config('SQL_PORT'),  # or your MySQL port
+        'PASSWORD': config('SQL_PASSWORD'),
+        'HOST': config('SQL_HOST'),  # or your PostgreSQL host address
+        'PORT': config('SQL_PORT'),  # or your PostgreSQL port
     }
 }
 
@@ -151,7 +155,3 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_HOST_USER = 'matema.group@gmail.com'
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-
-
-
-

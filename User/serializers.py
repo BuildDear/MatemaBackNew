@@ -1,24 +1,8 @@
 from django.contrib.auth.password_validation import validate_password
 from django.db import transaction
 from rest_framework import serializers
-from djoser.serializers import UserCreateSerializer
 from .models import User
-
-
-class UserListSerializer(serializers.ModelSerializer):
-    """List of users"""
-
-    class Meta:
-        model = User
-        fields = "__all__"
-
-
-class UserDetailSerializer(serializers.ModelSerializer):
-    """All user"""
-
-    class Meta:
-        model = User
-        fields = "__all__"
+from djoser.serializers import UserCreateSerializer
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -27,7 +11,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "email", "password", "password2")
+        fields = ("username", "first_name", "last_name", "email", "password", "re_password")
         extra_kwargs = {"password": {"write_only": True, "required": True, "validators": [validate_password]}, }
 
     def validate(self, attrs):
