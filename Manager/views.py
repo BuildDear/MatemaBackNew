@@ -25,15 +25,19 @@ class TaskSearchView(APIView):
     def get(self, request):
         theme_id = request.query_params.get('theme_id')
         point = request.query_params.get('point')
-        if theme_id:
+
+        if theme_id and point:
+            tasks = Task.objects.filter(theme_id=theme_id, point=point)
+        elif theme_id:
             tasks = Task.objects.filter(theme_id=theme_id)
         elif point:
             tasks = Task.objects.filter(point=point)
         else:
-            return Response({"message": "Invalid point or name."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"message": "Invalid or missing parameters."}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 class TaskCreateView(APIView):
