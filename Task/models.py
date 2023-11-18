@@ -24,7 +24,7 @@ class Task(models.Model):
     image_url = models.CharField(max_length=255)
     point = models.IntegerField()
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
-    type_ans = models.ForeignKey(TypeAnswer, on_delete=models.SET_NULL, default=1, null=True)
+    type_ans = models.ForeignKey(TypeAnswer, on_delete=models.CASCADE)
     answer = models.TextField()
 
     class Meta:

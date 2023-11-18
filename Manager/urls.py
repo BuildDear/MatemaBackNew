@@ -11,4 +11,6 @@ urlpatterns = [
     path('theme/create/', ThemeCreateView.as_view(), name='create-theme'),
     path('theme/delete/<int:pk>/', ThemeDeleteView.as_view(), name='delete-theme'),
     path('theme/edit/<int:pk>/', ThemeEditView.as_view(), name='task-edit'),
+
+    path('type_answer/create/', TypeAnswerCreateView.as_view(), name='create-type_answer'),
 ]

@@ -23,7 +23,7 @@ class TaskCreateView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = TaskCreateSerializer(data=request.data)
         if serializer.is_valid():
-            task = serializer.create(serializer.validated_data)
+            task = serializer.save()
             return JsonResponse(TaskCreateSerializer(task).data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -84,6 +84,7 @@ class ThemeEditView(generics.RetrieveUpdateAPIView):
     serializer_class = ThemeSerializer
 
 
+<<<<<<< HEAD
 class UserListView(ListAPIView):
     """
     API view to list all users.
@@ -117,3 +118,14 @@ class UserDetailView(RetrieveAPIView):
 
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
+=======
+class TypeAnswerCreateView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        serializer = TypeAnswerCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            type_ans = serializer.save()
+            return Response(ThemeCreateSerializer(type_ans).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+>>>>>>> update serializer

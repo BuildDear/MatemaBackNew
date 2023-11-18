@@ -22,25 +22,24 @@ class ThemeSerializer(serializers.ModelSerializer):
 
 
 class TaskCreateSerializer(serializers.ModelSerializer):
-    theme = ThemeSerializer()
-
     class Meta:
         model = Task
         fields = "__all__"
 
     def create(self, validated_data):
-        # Перевіряємо, чи існує завдання з таким самим іменем
         if Task.objects.filter(name=validated_data['name']).exists():
-            raise serializers.ValidationError({'name': 'A task with that name already exists.'})
+            raise serializers.ValidationError('Завдання з таким іменем вже існує.')
 
-        # Перевіряємо, чи існують записи для Theme та TypeAnswer
-        if not Theme.objects.filter(id=validated_data['theme']).exists():
-            raise serializers.ValidationError({'theme': 'Invalid theme_id'})
+        theme = validated_data.get('theme')
+        if not isinstance(theme, Theme):
+            raise serializers.ValidationError('Недійсний ID для theme.')
 
-        if not TypeAnswer.objects.filter(id=validated_data['type_ans']).exists():
-            raise serializers.ValidationError({'type_ans': 'Invalid type_id'})
+        # Отримання та присвоєння об'єкту TypeAnswer
+        type_ans = validated_data.get('type_ans')
+        if not isinstance(type_ans, TypeAnswer):
+            raise serializers.ValidationError('Недійсний ID для type_ans.')
 
-        # Створюємо і зберігаємо нове завдання
+        # Створення завдання
         task = Task.objects.create(**validated_data)
 
         return task
@@ -83,3 +82,15 @@ class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
+class TypeAnswerCreateSerializer(serializers.ModelSerializer):
+
+    def create_type_answer(self, name):
+        if TypeAnswer.objects.filter(id=name).exists():
+            raise ValidationError('A TypeAnswer with that name already exists.')
+
+        type_ans = TypeAnswer.objects.create(name=name)
+        return type_ans
+
+    class Meta:
+        model = TypeAnswer
+        fields = ['name']
