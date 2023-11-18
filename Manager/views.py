@@ -1,20 +1,39 @@
-from django.http import JsonResponse
 from rest_framework.permissions import AllowAny
 from rest_framework.views import APIView
 from rest_framework import status
 from .serializer import *
 
 from rest_framework import generics
+from Task.models import *
 from rest_framework.response import Response
 
 from User.models import User
 
 
-class TasksView(APIView):
+class TaskView(APIView):
+    permission_classes = (AllowAny,)
+
     def get(self, request):
-        tasks = Task.objects.all()
+        task = Task.objects.all()
+        serializer = TaskSerializer(task, many=True)
+        return Response(serializer.data)
+
+
+class TaskSearchView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        theme_id = request.query_params.get('theme_id')
+        point = request.query_params.get('point')
+        if theme_id:
+            tasks = Task.objects.filter(theme_id=theme_id)
+        elif point:
+            tasks = Task.objects.filter(point=point)
+        else:
+            return Response({"message": "Invalid point or name."}, status=status.HTTP_404_NOT_FOUND)
+
         serializer = TaskSerializer(tasks, many=True)
-        return JsonResponse(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class TaskCreateView(APIView):
@@ -24,34 +43,61 @@ class TaskCreateView(APIView):
         serializer = TaskCreateSerializer(data=request.data)
         if serializer.is_valid():
             task = serializer.save()
-            return JsonResponse(TaskCreateSerializer(task).data, status=status.HTTP_201_CREATED)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(TaskCreateSerializer(task).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class TaskDeleteView(APIView):
-    def delete(self, request, *args, **kwargs):
-        task_id = kwargs.get('task_id', None)
+    permission_classes = (AllowAny,)
+
+    def delete(self, request, **kwargs):
+        task_id = kwargs.get('pk', None)
         if task_id is not None:
             try:
                 task = Task.objects.get(id=task_id)
                 task.delete()
-                return JsonResponse({"message": "Successful delete!"}, status=status.HTTP_204_NO_CONTENT)
+                return Response({"message": "Successful delete!"}, status=status.HTTP_204_NO_CONTENT)
             except Task.DoesNotExist:
-                return JsonResponse({"message": "Invalid task_id."}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"message": "Invalid task_id."}, status=status.HTTP_404_NOT_FOUND)
         else:
-            return JsonResponse({"message": "Task ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "Task ID is required."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class TaskEditView(generics.RetrieveUpdateAPIView):
-    queryset = Task.objects.all()
-    serializer_class = TaskSerializer
+class TaskEditView(APIView):
+    permission_classes = (AllowAny,)
+
+    def put(self, request, pk):
+        try:
+            task = Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            return Response({'message': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = TaskSerializer(task, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def patch(self, request, pk):
+        try:
+            task = Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            return Response({'message': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = TaskSerializer(task, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class ThemeView(APIView):
+    permission_classes = (AllowAny,)
+
     def get(self, request):
         theme = Theme.objects.all()
         serializer = ThemeSerializer(theme, many=True)
-        return JsonResponse(serializer.data)
+        return Response(serializer.data)
 
 
 class ThemeCreateView(APIView):
@@ -66,25 +112,47 @@ class ThemeCreateView(APIView):
 
 
 class ThemeDeleteView(APIView):
+    permission_classes = (AllowAny,)
+
     def delete(self, request, **kwargs):
-        theme_id = kwargs.get('them_id')
+        theme_id = kwargs.get('pk')
         if theme_id is not None:
             try:
                 theme = Theme.objects.get(id=theme_id)
                 theme.delete()
-                return JsonResponse({"message": "Successful delete!"}, status=status.HTTP_204_NO_CONTENT)
+                return Response({"message": "Successful delete!"}, status=status.HTTP_204_NO_CONTENT)
             except Theme.DoesNotExist:
-                return JsonResponse({"message": "Invalid theme_id."}, status=status.HTTP_404_NOT_FOUND)
+                return Response({"message": "Invalid theme_id."}, status=status.HTTP_404_NOT_FOUND)
         else:
-            return JsonResponse({"message": "theme_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "theme_id is required."}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class ThemeEditView(generics.RetrieveUpdateAPIView):
-    queryset = Theme.objects.all()
-    serializer_class = ThemeSerializer
+class ThemeEditView(APIView):
+    permission_classes = (AllowAny,)
+
+    def put(self, request, pk):
+        try:
+            theme = Theme.objects.get(pk=pk)
+        except Theme.DoesNotExist:
+            return Response({'message': 'Theme not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = ThemeSerializer(theme, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-<<<<<<< HEAD
+class TypeAnswerView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request):
+        type_ans = TypeAnswer.objects.all()
+        serializer = TypeAnswerSerializer(type_ans, many=True)
+        return Response(serializer.data)
+
+
+
 class UserListView(ListAPIView):
     """
     API view to list all users.
@@ -118,7 +186,7 @@ class UserDetailView(RetrieveAPIView):
 
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
-=======
+
 class TypeAnswerCreateView(APIView):
     permission_classes = (AllowAny,)
 
@@ -128,4 +196,37 @@ class TypeAnswerCreateView(APIView):
             type_ans = serializer.save()
             return Response(ThemeCreateSerializer(type_ans).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
->>>>>>> update serializer
+
+
+
+class TypeAnswerDeleteView(APIView):
+    permission_classes = (AllowAny,)
+
+    def delete(self, request, **kwargs):
+        type_ans_id = kwargs.get('pk')
+        if type_ans_id is not None:
+            try:
+                type_ans = TypeAnswer.objects.get(id=type_ans_id)
+                type_ans.delete()
+                return Response({"message": "Successful delete!"}, status=status.HTTP_204_NO_CONTENT)
+            except Theme.DoesNotExist:
+                return Response({"message": "Invalid type_ans_id."}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response({"message": "type_ans_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class TypeAnswerEditView(APIView):
+    permission_classes = (AllowAny,)
+
+    def put(self, request, pk):
+        try:
+            type_ans = TypeAnswer.objects.get(pk=pk)
+        except TypeAnswer.DoesNotExist:
+            return Response({'message': 'Type answer not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = TypeAnswerSerializer(type_ans, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    

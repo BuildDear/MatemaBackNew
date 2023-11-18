@@ -6,7 +6,6 @@ from User.models import User
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    """List of Task"""
 
     class Meta:
         model = Task
@@ -14,10 +13,16 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class ThemeSerializer(serializers.ModelSerializer):
-    """List of Theme"""
 
     class Meta:
         model = Theme
+        fields = "__all__"
+
+
+class TypeAnswerSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TypeAnswer
         fields = "__all__"
 
 
@@ -28,18 +33,16 @@ class TaskCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         if Task.objects.filter(name=validated_data['name']).exists():
-            raise serializers.ValidationError('Завдання з таким іменем вже існує.')
+            raise serializers.ValidationError('A task with that name already exists.')
 
         theme = validated_data.get('theme')
         if not isinstance(theme, Theme):
-            raise serializers.ValidationError('Недійсний ID для theme.')
+            raise serializers.ValidationError('Invalid ID for theme.')
 
-        # Отримання та присвоєння об'єкту TypeAnswer
         type_ans = validated_data.get('type_ans')
         if not isinstance(type_ans, TypeAnswer):
-            raise serializers.ValidationError('Недійсний ID для type_ans.')
+            raise serializers.ValidationError('Invalid ID for type_ans.')
 
-        # Створення завдання
         task = Task.objects.create(**validated_data)
 
         return task
@@ -51,13 +54,12 @@ class ThemeCreateSerializer(serializers.ModelSerializer):
         if Theme.objects.filter(id=name).exists():
             raise ValidationError('A theme with that name already exists.')
 
-        # Creates a new Them instance and saves it to the database
         theme = Theme.objects.create(name=name)
         return theme
 
     class Meta:
         model = Theme
-        fields = ['name']
+        fields = "__all__"
 
 
 class ThemeSerializer(serializers.ModelSerializer):
@@ -93,4 +95,4 @@ class TypeAnswerCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TypeAnswer
-        fields = ['name']
+        fields = "__all__"
