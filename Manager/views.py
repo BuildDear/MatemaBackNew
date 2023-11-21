@@ -1,9 +1,9 @@
-from rest_framework.permissions import AllowAny
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import status
 from .serializer import *
 
-from rest_framework import generics
 from Task.models import *
 from rest_framework.response import Response
 
@@ -37,7 +37,6 @@ class TaskSearchView(APIView):
 
         serializer = TaskSerializer(tasks, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
 
 class TaskCreateView(APIView):
@@ -156,7 +155,6 @@ class TypeAnswerView(APIView):
         return Response(serializer.data)
 
 
-
 class UserListView(ListAPIView):
     """
     API view to list all users.
@@ -191,6 +189,7 @@ class UserDetailView(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
 
+
 class TypeAnswerCreateView(APIView):
     permission_classes = (AllowAny,)
 
@@ -200,7 +199,6 @@ class TypeAnswerCreateView(APIView):
             type_ans = serializer.save()
             return Response(ThemeCreateSerializer(type_ans).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 class TypeAnswerDeleteView(APIView):
@@ -233,4 +231,3 @@ class TypeAnswerEditView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
