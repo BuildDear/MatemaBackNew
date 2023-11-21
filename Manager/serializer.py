@@ -62,14 +62,6 @@ class ThemeCreateSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class ThemeSerializer(serializers.ModelSerializer):
-    """List of Theme"""
-
-    class Meta:
-        model = Theme
-        fields = "__all__"
-
-
 class UserListSerializer(serializers.ModelSerializer):
     """List of users"""
 
@@ -84,6 +76,8 @@ class UserDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
+
+
 class TypeAnswerCreateSerializer(serializers.ModelSerializer):
 
     def create_type_answer(self, name):
@@ -96,3 +90,4 @@ class TypeAnswerCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = TypeAnswer
         fields = "__all__"
+

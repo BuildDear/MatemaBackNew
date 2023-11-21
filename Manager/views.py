@@ -1,8 +1,10 @@
-from rest_framework.permissions import AllowAny
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import status
 from .serializer import *
 from Task.models import *
+from User.models import *
 from rest_framework.response import Response
 
 
@@ -192,3 +194,38 @@ class TypeAnswerEditView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserListView(ListAPIView):
+    """
+    API view to list all users.
+
+    This view extends Django REST Framework's ListAPIView to provide a list of all users.
+    It is intended to be used by clients to retrieve a list of all user accounts.
+
+    Attributes:
+    - permission_class: This view requires the user to be authenticated to access it.
+      'IsAuthenticated' ensures that only authenticated users can make requests to this view.
+    - queryset: The set of user records that this view will handle. Here, it's set to include all users in the User model.
+    - serializer_class: The serializer class used to convert user instances into a format that can be easily rendered into JSON.
+    """
+
+    permission_class = IsAuthenticated
+    queryset = User.objects.all()
+    serializer_class = UserListSerializer
+
+
+class UserDetailView(RetrieveAPIView):
+    """
+    API view to retrieve a single user's details.
+
+    This view extends Django REST Framework's RetrieveAPIView to provide details of a specific user.
+    It is used to retrieve the details of a single user account, identified by the user's ID in the URL.
+
+    Attributes:
+    - queryset: The set of user records that this view will handle. As with UserListView, it includes all users.
+    - serializer_class: The serializer class used for converting the user instance into a format that can be rendered into JSON.
+    """
+
+    queryset = User.objects.all()
+    serializer_class = UserDetailSerializer
