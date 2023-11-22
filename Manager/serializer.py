@@ -28,19 +28,19 @@ class TaskCreateSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
-        if Task.objects.filter(name=validated_data['name']).exists():
-            raise serializers.ValidationError('A task with that name already exists.')
+        # Отримання імені теми
+        theme_name = validated_data.pop('theme_name')
+        theme = Theme.objects.get(id=theme_name)
+        # Перевірка, чи існує така тема
+        if Theme.objects.filter(id=theme).exists():
+            raise serializers.ValidationError('Invalid theme name.')
 
-        theme = validated_data.get('theme')
-        if not isinstance(theme, Theme):
-            raise serializers.ValidationError('Invalid ID for theme.')
-
+        # Перевірка type_ans
         type_ans = validated_data.get('type_ans')
         if not isinstance(type_ans, TypeAnswer):
-            raise serializers.ValidationError('Invalid ID for type_ans.')
+            raise serializers.ValidationError('Invalid type_ans instance.')
 
         task = Task.objects.create(**validated_data)
-
         return task
 
 
