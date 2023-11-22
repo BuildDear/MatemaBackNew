@@ -8,14 +8,14 @@ class TypeAnswer(models.Model):
     name = models.CharField(max_length=30)
 
     class Meta:
-        db_table = "type_answer"
+        db_table = "Type_answer"
 
 
 class Theme(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, primary_key=True)
 
     class Meta:
-        db_table = "them"
+        db_table = "Theme"
 
 
 class Task(models.Model):
@@ -23,8 +23,8 @@ class Task(models.Model):
     text = models.TextField()
     image_url = models.CharField(max_length=255)
     point = models.IntegerField()
-    them = models.ForeignKey(Theme, on_delete=models.CASCADE)
-    type = models.ForeignKey(TypeAnswer, on_delete=models.CASCADE)
+    theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name')
+    type_ans = models.ForeignKey(TypeAnswer, on_delete=models.CASCADE)
     answer = models.TextField()
 
     class Meta:
