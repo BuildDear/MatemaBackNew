@@ -45,7 +45,7 @@ class TaskList(models.Model):
 
 class UserTheme(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    them = models.ForeignKey(Theme, on_delete=models.CASCADE)
+    theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
 
     class Meta:
         db_table = "UserTheme"
