@@ -5,22 +5,6 @@ from .models import User
 from djoser.serializers import UserCreateSerializer
 
 
-class UserListSerializer(serializers.ModelSerializer):
-    """List of users"""
-
-    class Meta:
-        model = User
-        fields = "__all__"
-
-
-class UserDetailSerializer(serializers.ModelSerializer):
-    """All user"""
-
-    class Meta:
-        model = User
-        fields = "__all__"
-
-
 class CustomUserCreateSerializer(UserCreateSerializer):
     """Registration user"""
     re_password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
