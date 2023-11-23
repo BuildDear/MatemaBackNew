@@ -19,7 +19,7 @@ class Theme(models.Model):
 
 
 class Task(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, unique=True, primary_key=True)
     text = models.TextField()
     image_url = models.CharField(max_length=255)
     point = models.IntegerField()
@@ -32,8 +32,8 @@ class Task(models.Model):
 
 
 class TaskList(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, to_field='username')
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, to_field='name')
     is_current = models.BooleanField()
     is_done = models.BooleanField()
     is_weekly = models.BooleanField()
@@ -44,7 +44,7 @@ class TaskList(models.Model):
 
 
 class UserTheme(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, to_field='username')
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name')
 
     class Meta:

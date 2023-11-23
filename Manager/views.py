@@ -196,6 +196,17 @@ class TypeAnswerEditView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserThemeCreateView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        serializer = UserThemeCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            user_theme = serializer.save()
+            return Response(UserThemeCreateSerializer(user_theme).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UserListView(ListAPIView):
     """
     API view to list all users.
