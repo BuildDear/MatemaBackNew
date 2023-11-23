@@ -12,7 +12,7 @@ class TypeAnswer(models.Model):
 
 
 class Theme(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, primary_key=True)
 
     class Meta:
         db_table = "Theme"
@@ -23,7 +23,7 @@ class Task(models.Model):
     text = models.TextField()
     image_url = models.CharField(max_length=255)
     point = models.IntegerField()
-    theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
+    theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name')
     type_ans = models.ForeignKey(TypeAnswer, on_delete=models.CASCADE)
     answer = models.TextField()
 
@@ -45,7 +45,7 @@ class TaskList(models.Model):
 
 class UserTheme(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
+    theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name')
 
     class Meta:
         db_table = "UserTheme"
