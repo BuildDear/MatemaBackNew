@@ -21,9 +21,9 @@ class ThemeSerializer(serializers.ModelSerializer):
 
 class TypeAnswerSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = TypeAnswer
-        fields = "__all__"
+   class Meta:
+       model = TypeAnswer
+       fields = "__all__"
 
 
 class TaskCreateSerializer(serializers.ModelSerializer):
@@ -80,14 +80,28 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
 class TypeAnswerCreateSerializer(serializers.ModelSerializer):
 
-    def create_type_answer(self, name):
-        if TypeAnswer.objects.filter(id=name).exists():
-            raise ValidationError('A TypeAnswer with that name already exists.')
+   def create_type_answer(self, name):
+       if TypeAnswer.objects.filter(id=name).exists():
+           raise ValidationError('A TypeAnswer with that name already exists.')
 
-        type_ans = TypeAnswer.objects.create(name=name)
-        return type_ans
+       type_ans = TypeAnswer.objects.create(name=name)
+       return type_ans
 
-    class Meta:
-        model = TypeAnswer
-        fields = "__all__"
+   class Meta:
+       model = TypeAnswer
+       fields = "__all__"
 
+
+class TaskAnswerSerializer(serializers.Serializer):
+    answer_data = serializers.JSONField()
+
+    def validate(self, data):
+        answer_data = data['answer_data']
+
+        # Check if the provided JSON data is valid
+        if not isinstance(answer_data, dict):
+            raise serializers.ValidationError("Invalid answer data format")
+
+        # You can add additional validation logic here based on your requirements
+
+        return data

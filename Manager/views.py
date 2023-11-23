@@ -184,16 +184,16 @@ class TypeAnswerEditView(APIView):
     permission_classes = (AllowAny,)
 
     def put(self, request, pk):
-        try:
-            type_ans = TypeAnswer.objects.get(pk=pk)
-        except TypeAnswer.DoesNotExist:
-            return Response({'message': 'Type answer not found'}, status=status.HTTP_404_NOT_FOUND)
+       try:
+           type_ans = TypeAnswer.objects.get(pk=pk)
+       except TypeAnswer.DoesNotExist:
+           return Response({'message': 'Type answer not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = TypeAnswerSerializer(type_ans, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+       serializer = TypeAnswerSerializer(type_ans, data=request.data)
+       if serializer.is_valid():
+           serializer.save()
+           return Response(serializer.data, status=status.HTTP_200_OK)
+       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserListView(ListAPIView):
@@ -229,3 +229,39 @@ class UserDetailView(RetrieveAPIView):
 
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
+
+
+class TaskAnswerView(APIView):
+    def post(self, request, task_id):
+        task = Task.objects.get(pk=task_id)
+        serializer = TaskAnswerSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        answer_data = serializer.validated_data['answer_data']
+
+        # Determine the answer type based on the provided JSON structure
+        answer_type = None
+        if 'options' in answer_data and 'correct_answer' in answer_data:
+            answer_type = 'mcq'
+        elif 'pairs' in answer_data:
+            answer_type = 'matching'
+        elif 'correct_answer' in answer_data:
+            answer_type = 'short'
+
+        # Set the new answer based on the determined answer_type
+        if answer_type == 'mcq':
+            task.answer_matching = None
+            task.answer_short = None
+            task.answer_mcq = answer_data
+        elif answer_type == 'matching':
+            task.answer_mcq = None
+            task.answer_short = None
+            task.answer_matching = answer_data
+        elif answer_type == 'short':
+            task.answer_mcq = None
+            task.answer_matching = None
+            task.answer_short = answer_data
+
+        task.save()
+
+        return Response({'message': 'Answer added successfully'})

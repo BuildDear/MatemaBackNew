@@ -8,6 +8,8 @@ urlpatterns = [
     path('task/delete/<int:pk>/', TaskDeleteView.as_view(), name='delete-task'),
     path('task/edit/<int:pk>/', TaskEditView.as_view(), name='task-edit'),
 
+    path('tasks/add-answer/<int:task_id>', TaskAnswerView.as_view(), name='add-task-answer'),
+
     path('theme/all/', ThemeView.as_view(), name='view-theme'),
     path('theme/create/', ThemeCreateView.as_view(), name='create-theme'),
     path('theme/delete/<int:pk>/', ThemeDeleteView.as_view(), name='delete-theme'),

@@ -25,7 +25,6 @@ class Task(models.Model):
     point = models.IntegerField()
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
     type_ans = models.ForeignKey(TypeAnswer, on_delete=models.CASCADE)
-    answer = models.TextField()
 
     class Meta:
         db_table = "Task"
