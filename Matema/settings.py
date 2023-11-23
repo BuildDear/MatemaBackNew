@@ -1,7 +1,8 @@
+from datetime import timedelta
+
 import django
 from pathlib import Path
 from decouple import config
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,7 +23,6 @@ CORS_ORIGIN_WHITELIST = (
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -145,7 +145,9 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SIMPLE_JWT = {
-   'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=20),
 }
 
 DJOSER = {
@@ -159,7 +161,6 @@ DJOSER = {
         'user_create': 'User.serializers.CustomUserCreateSerializer',
     },
 }
-
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
