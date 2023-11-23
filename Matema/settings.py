@@ -7,6 +7,21 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+CSRF_TRUSTED_ORIGINS = ['https://matema-dev-ncrzmugb6q-lm.a.run.app']
+
+CORS_REPLACE_HTTPS_REFERER = True
+
+CSRF_COOKIE_DOMAIN = 'matema-dev-ncrzmugb6q-lm.a.run.app'
+
+CORS_ORIGIN_WHITELIST = (
+    'https://matema-dev-ncrzmugb6q-lm.a.run.app',
+    'matema-dev-ncrzmugb6q-lm.a.run.app',
+)
+
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
