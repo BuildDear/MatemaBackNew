@@ -1,6 +1,9 @@
 Matema/.env
 Matema/.idea
 
+user_photos/
+task_photos/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
