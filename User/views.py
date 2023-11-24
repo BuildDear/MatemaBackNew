@@ -65,7 +65,7 @@ class UserPhotoCreateView(APIView):
 
         photo = request.data.get('photo')
 
-        file_name = f"{user.username}_user{user.id}"
+        file_name = f"{user.username}_ID{user.id}"
 
         user.photo.save(file_name, photo)
 

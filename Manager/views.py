@@ -284,7 +284,7 @@ class TaskPhotoCreateView(APIView):
 
         photo = request.data.get('photo')
 
-        file_name = f"{task.name}_task{task.id}"
+        file_name = f"{task.name}_ID{task.id}"
 
         task.photo.save(file_name, photo)
 
