@@ -21,10 +21,11 @@ class Theme(models.Model):
 class Task(models.Model):
     name = models.CharField(max_length=100, unique=True)
     text = models.TextField()
-    image_url = models.CharField(max_length=255)
     point = models.IntegerField()
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
     type_ans = models.ForeignKey(TypeAnswer, on_delete=models.CASCADE)
+
+    photo = models.ImageField(upload_to='task_photos/', blank=True, null=True)
 
     answer_matching = models.JSONField(null=True)
     answer_short = models.JSONField(null=True)
