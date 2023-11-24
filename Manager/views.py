@@ -266,3 +266,45 @@ class TaskAnswerCreateView(APIView):
         task.save()
 
         return Response({'message': 'Answer added successfully'})
+
+class TaskPhotoCreateView(APIView):
+    permission_classes = (AllowAny,)
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, pk):
+        try:
+            task = Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            return Response({'message': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if task.photo:
+            task.photo.delete()
+
+        photo = request.data.get('photo')
+
+        file_name = f"{task.name}_task{task.id}"
+
+        task.photo.save(file_name, photo)
+
+        serializer = TaskSerializer(task)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class TaskPhotoDeleteView(APIView):
+    permission_classes = (AllowAny,)
+
+    def delete(self, request, pk):
+        try:
+            task = Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            return Response({'message': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if task.photo:
+            file_path = task.photo.path
+            default_storage.delete(file_path)
+
+            task.photo = None
+            task.save()
+
+            return Response({'message': 'Task photo deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({'message': 'Task does not have a photo'}, status=status.HTTP_404_NOT_FOUND)
