@@ -30,3 +30,8 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             user.set_password(validated_data["password"])
             user.save()
             return user
+
+class UserPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['photo']
