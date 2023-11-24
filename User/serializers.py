@@ -31,7 +31,10 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             user.save()
             return user
 
+
 class UserPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['photo']
+        # Add this line if the photo field allows null values
+        extra_kwargs = {'photo': {'allow_null': True}}

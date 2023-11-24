@@ -103,3 +103,25 @@ class TaskAnswerSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid answer data format")
 
         return data
+
+class TaskPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['photo']
+
+
+class TaskTypeSetSerializer(serializers.Serializer):
+    type_ans = serializers.CharField(max_length=50)
+
+    def validate_type_ans(self, value):
+        try:
+            # Try to get the TypeAnswer instance based on the provided type
+            type_ans_instance = TypeAnswer.objects.get(name=value)
+            return type_ans_instance
+        except TypeAnswer.DoesNotExist:
+            raise serializers.ValidationError("Invalid type_ans value.")
+
+class TypeAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TypeAnswer
+        fields = ['name']

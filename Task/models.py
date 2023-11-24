@@ -40,7 +40,7 @@ class TaskList(models.Model):
     is_current = models.BooleanField()
     is_done = models.BooleanField()
     is_weekly = models.BooleanField()
-    point = models.IntegerField(null=True)
+    point = models.IntegerField(null=True,blank=True)
 
     class Meta:
         db_table = "TaskList"
