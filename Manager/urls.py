@@ -11,7 +11,7 @@ urlpatterns = [
     path("task/add_photo/<int:pk>/", TaskPhotoCreateView.as_view(), name='create-task-photo'),
     path("task/delete_photo/<int:pk>/", TaskPhotoDeleteView.as_view(), name='delete-task-photo'),
 
-    path('tasks/createAnswer/<int:task_id>', TaskAnswerCreateView.as_view(), name='add-task-answer'),
+    path('tasks/create_answer/<int:task_id>', TaskAnswerCreateView.as_view(), name='add-task-answer'),
 
     path('theme/all/', ThemeView.as_view(), name='view-theme'),
     path('theme/create/', ThemeCreateView.as_view(), name='create-theme'),

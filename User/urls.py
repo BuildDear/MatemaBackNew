@@ -1,6 +1,5 @@
 from django.urls import path
-from User import views
-
+from User.views import UserPhotoCreateView, UserPhotoDeleteView
 
 urlpatterns = [
     path('add_photo/', UserPhotoCreateView.as_view(), name='add-user-photo'),
