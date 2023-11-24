@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
 from Task.models import *
-from random import sample
 from User.models import User
 
 
@@ -100,47 +99,16 @@ class UserThemeCreateSerializer(serializers.ModelSerializer):
         if not isinstance(theme, Theme):
             raise serializers.ValidationError('Invalid theme instance.')
 
-        theme = validated_data.get('theme')
-        if not isinstance(theme, Theme):
-            raise serializers.ValidationError('Invalid theme instance.')
+        user = validated_data.get('user')
+        if not isinstance(user, User):
+            raise serializers.ValidationError('Invalid user instance.')
 
         user_theme = UserTheme.objects.create(**validated_data)
         return user_theme
 
 
-def select_tasks_for_user(user):
-    # Отримати список тем, які вибрав користувач
-    user_themes = UserTheme.objects.filter(user=user).values_list('them', flat=True)
+class TaskListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskList
+        fields = "__all__"
 
-    tasks_to_assign = []
-
-    # Алгоритм вибору завдань
-    if len(user_themes) >= 6:
-        # Розподілити завдання рівномірно між всіма темами
-        for theme in user_themes:
-            tasks = Task.objects.filter(theme=theme).order_by('point')
-            tasks_to_assign.extend(select_tasks_by_points(tasks))
-    else:
-        # Вибрати додаткові завдання з перших тем
-        extra_tasks_needed = 6 - len(user_themes)
-        for i, theme in enumerate(user_themes):
-            tasks = Task.objects.filter(theme=theme).order_by('point')
-            if i < extra_tasks_needed:
-                tasks_to_assign.extend(select_tasks_by_points(tasks, extra=True))
-            else:
-                tasks_to_assign.extend(select_tasks_by_points(tasks))
-
-    return tasks_to_assign
-
-
-def select_tasks_by_points(tasks, extra=False):
-    # Розподіл за балами: 1 бал - 2 завдання, 2 бали - 2 завдання, 3 бали - 1 завдання
-    tasks_by_points = {1: 2, 2: 2, 3: 1}
-    selected_tasks = []
-
-    for point, count in tasks_by_points.items():
-        filtered_tasks = tasks.filter(point=point)
-        count = count + 1 if extra and point == 1 else count
-        selected_tasks.extend(sample(list(filtered_tasks), min(count, len(filtered_tasks))))
-
-    return selected_tasks
