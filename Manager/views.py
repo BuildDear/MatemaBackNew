@@ -232,6 +232,7 @@ class UserDetailView(RetrieveAPIView):
 
 
 class TaskAnswerView(APIView):
+    permission_classes = (AllowAny,)
     def post(self, request, task_id):
         task = Task.objects.get(pk=task_id)
         serializer = TaskAnswerSerializer(data=request.data)

@@ -26,6 +26,9 @@ class Task(models.Model):
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE)
     type_ans = models.ForeignKey(TypeAnswer, on_delete=models.CASCADE)
 
+    answer_matching = models.JSONField(null=True)
+    answer_short = models.JSONField(null=True)
+    answer_mcq = models.JSONField(null=True)
     class Meta:
         db_table = "Task"
 

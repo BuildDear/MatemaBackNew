@@ -102,6 +102,4 @@ class TaskAnswerSerializer(serializers.Serializer):
         if not isinstance(answer_data, dict):
             raise serializers.ValidationError("Invalid answer data format")
 
-        # You can add additional validation logic here based on your requirements
-
         return data
