@@ -1,7 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
+from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.utils.http import urlsafe_base64_decode
+from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 
 def activate_account(request, uidb64, token):
@@ -43,3 +49,44 @@ def activate_account(request, uidb64, token):
         return HttpResponse('Activation link is invalid!')
 
 
+class UserPhotoSerializer:
+    pass
+
+
+class UserPhotoCreateView(APIView):
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+
+        if user.photo:
+            user.photo.delete()
+
+        photo = request.data.get('photo')
+
+        file_name = f"{user.username}_user{user.id}"
+
+        user.photo.save(file_name, photo)
+
+        serializer = UserPhotoSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class UserPhotoDeleteView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def delete(self, request, *args, **kwargs):
+        user = request.user
+
+        if user.photo:
+            # Delete the photo file from storage
+            file_path = user.photo.path
+            default_storage.delete(file_path)
+
+            # Delete the photo field in the User model
+            user.photo = None
+            user.save()
+
+            return Response({'message': 'User photo deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({'message': 'User does not have a photo'}, status=status.HTTP_404_NOT_FOUND)
