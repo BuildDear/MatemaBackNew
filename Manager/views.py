@@ -9,7 +9,7 @@ from rest_framework.response import Response
 
 
 class TaskView(APIView):
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         task = Task.objects.all()

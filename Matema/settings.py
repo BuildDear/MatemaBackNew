@@ -1,6 +1,5 @@
 from datetime import timedelta
 
-import django
 from pathlib import Path
 from decouple import config
 
