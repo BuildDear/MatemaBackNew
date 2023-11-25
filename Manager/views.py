@@ -22,13 +22,13 @@ class TaskSearchView(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
-        theme_id = request.query_params.get('theme_id')
+        theme_name = request.query_params.get('theme_id')
         point = request.query_params.get('point')
 
-        if theme_id and point:
-            tasks = Task.objects.filter(theme_id=theme_id, point=point)
-        elif theme_id:
-            tasks = Task.objects.filter(theme_id=theme_id)
+        if theme_name and point:
+            tasks = Task.objects.filter(theme_id=theme_name, point=point)
+        elif theme_name:
+            tasks = Task.objects.filter(theme_id=theme_name)
         elif point:
             tasks = Task.objects.filter(point=point)
         else:
@@ -53,10 +53,10 @@ class TaskDeleteView(APIView):
     permission_classes = (AllowAny,)
 
     def delete(self, request, **kwargs):
-        task_id = kwargs.get('pk', None)
-        if task_id is not None:
+        task_name = kwargs.get('name', None)
+        if task_name is not None:
             try:
-                task = Task.objects.get(id=task_id)
+                task = Task.objects.get(name=task_name)
                 task.delete()
                 return Response({"message": "Successful delete!"}, status=status.HTTP_204_NO_CONTENT)
             except Task.DoesNotExist:
@@ -68,25 +68,25 @@ class TaskDeleteView(APIView):
 class TaskEditView(APIView):
     permission_classes = (AllowAny,)
 
-    def put(self, request, pk):
+    def put(self, request, name):
         try:
-            task = Task.objects.get(pk=pk)
+            task = Task.objects.get(name=name)
         except Task.DoesNotExist:
             return Response({'message': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = TaskSerializer(task, data=request.data)
+        serializer = TaskUpdateSerializer(task, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def patch(self, request, pk):
+    def patch(self, request, name):
         try:
-            task = Task.objects.get(pk=pk)
+            task = Task.objects.get(name=name)
         except Task.DoesNotExist:
             return Response({'message': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = TaskSerializer(task, data=request.data, partial=True)
+        serializer = TaskUpdateSerializer(task, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -117,10 +117,10 @@ class ThemeDeleteView(APIView):
     permission_classes = (AllowAny,)
 
     def delete(self, request, **kwargs):
-        theme_id = kwargs.get('pk')
-        if theme_id is not None:
+        theme_name = kwargs.get('name')
+        if theme_name is not None:
             try:
-                theme = Theme.objects.get(id=theme_id)
+                theme = Theme.objects.get(name=theme_name)
                 theme.delete()
                 return Response({"message": "Successful delete!"}, status=status.HTTP_204_NO_CONTENT)
             except Theme.DoesNotExist:
@@ -132,9 +132,9 @@ class ThemeDeleteView(APIView):
 class ThemeEditView(APIView):
     permission_classes = (AllowAny,)
 
-    def put(self, request, pk):
+    def put(self, request, name):
         try:
-            theme = Theme.objects.get(pk=pk)
+            theme = Theme.objects.get(name=name)
         except Theme.DoesNotExist:
             return Response({'message': 'Theme not found'}, status=status.HTTP_404_NOT_FOUND)
 
