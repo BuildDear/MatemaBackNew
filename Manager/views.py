@@ -44,9 +44,66 @@ class TaskCreateView(APIView):
 
     def post(self, request, *args, **kwargs):
         serializer = TaskCreateSerializer(data=request.data)
+
         if serializer.is_valid():
             task = serializer.save()
+
+            # Check if answer data is present
+            if 'answer_data' in request.data:
+                answer_data = request.data['answer_data']
+
+                # Check if type_ans is present
+                if 'type_ans' not in request.data:
+                    # Return an error if type_ans is not specified when adding an answer
+                    task.delete()  # Rollback the task creation
+                    return Response({'message': 'Type_ans must be specified when adding an answer'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+                try:
+                    # Try to get the TypeAnswer instance based on the provided ID
+                    type_ans_instance = TypeAnswer.objects.get(id=request.data['type_ans'])
+                except TypeAnswer.DoesNotExist:
+                    # Return an error if the specified type_ans ID is not found
+                    task.delete()  # Rollback the task creation
+                    return Response({'message': 'Invalid type_ans ID'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+                # Determine the answer type based on the provided JSON structure
+                answer_type = None
+                if 'options' in answer_data and 'correct_answer' in answer_data:
+                    answer_type = 'mcq'
+                elif 'pairs' in answer_data:
+                    answer_type = 'matching'
+                elif 'correct_answer' in answer_data:
+                    answer_type = 'short'
+
+                # Check if the determined answer type matches the specified type_ans
+                if answer_type != type_ans_instance.name:
+                    # Return an error if the answer type doesn't match the specified type_ans
+                    task.delete()  # Rollback the task creation
+                    return Response({'message': 'Invalid answer data structure for the specified type_ans'},
+                                    status=status.HTTP_400_BAD_REQUEST)
+
+                # Set the new answer based on the determined answer_type
+                if answer_type == 'mcq':
+                    task.answer_matching = None
+                    task.answer_short = None
+                    task.answer_mcq = answer_data
+                elif answer_type == 'matching':
+                    task.answer_mcq = None
+                    task.answer_short = None
+                    task.answer_matching = answer_data
+                elif answer_type == 'short':
+                    task.answer_mcq = None
+                    task.answer_matching = None
+                    task.answer_short = answer_data
+
+                task.type_ans = type_ans_instance  # Set the TypeAnswer instance
+
+                task.save()
+
             return Response(TaskCreateSerializer(task).data, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 

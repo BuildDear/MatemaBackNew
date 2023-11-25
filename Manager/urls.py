@@ -9,12 +9,11 @@ urlpatterns = [
     path('task/edit/<int:pk>/', TaskEditView.as_view(), name='task-edit'),
 
     path('task/set_type/<int:pk>/', TaskTypeSetView.as_view(), name='set-task-type'),
+    path('tasks/set_answer/<int:pk>', TaskAnswerCreateView.as_view(), name='add-task-answer'),
 
     path("task/add_photo/<int:pk>/", TaskPhotoCreateView.as_view(), name='create-task-photo'),
     path("task/delete_photo/<int:pk>/", TaskPhotoDeleteView.as_view(), name='delete-task-photo'),
     path('task/get_photo/<int:pk>/', TaskPhotoRetrieveView.as_view(), name='retrieve-task-photo'),
-
-    path('tasks/create_answer/<int:pk>', TaskAnswerCreateView.as_view(), name='add-task-answer'),
 
     path('theme/all/', ThemeView.as_view(), name='view-theme'),
     path('theme/create/', ThemeCreateView.as_view(), name='create-theme'),
@@ -25,7 +24,8 @@ urlpatterns = [
     path('type_answer/create/', TypeAnswerCreateView.as_view(), name='create-type_answer'),
     path('type_answer/delete/<int:pk>/', TypeAnswerDeleteView.as_view(), name='delete-type_answer'),
     path('type_answer/edit/<int:pk>/', TypeAnswerEditView.as_view(), name='type_answer-edit'),
+    path('type_answer/edit/<int:pk>/', TypeAnswerEditView.as_view(), name='type_answer-edit'),
 
     path('user/all/', UserListView.as_view(), name='view-user'),
-    path('type_answer/edit/<int:pk>/', TypeAnswerEditView.as_view(), name='type_answer-edit'),
+
 ]
