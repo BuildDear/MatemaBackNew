@@ -2,47 +2,39 @@ from Task.models import *
 from random import sample
 
 
-def select_user_tasks(username, extra=False):
-    user_themes = UserTheme.objects.filter(user_id=username).values_list('theme_id', flat=True)
-    print(user_themes)
-    tasks_to_assign = []
+from random import sample
 
-    # Перевірка, що є рівно 6 різних тем
+def select_user_tasks(username):
+    user_themes = UserTheme.objects.filter(user_id=username).values_list('theme_id', flat=True)
+    tasks_to_assign = []
+    used_themes = set()  # Для зберігання тем, з яких вже вибрано завдання
+
     if len(user_themes) == 6:
-        # Розподіл балів для завдань
         tasks_by_points = {1: 2, 2: 2, 3: 1}
 
-        # Перебираємо теми та вибираємо завдання
-        for theme in user_themes:
-            tasks = Task.objects.filter(theme_id=theme).order_by('point')
-            print(tasks)
+        for point, count in tasks_by_points.items():
+            for _ in range(count):
+                for theme in user_themes:
+                    if theme not in used_themes:
+                        tasks = Task.objects.filter(theme_id=theme, point=point).order_by('point')
 
-            # Вибираємо завдання згідно з розподілом балів
-            for point, count in tasks_by_points.items():
-                filtered_tasks = tasks.filter(point=point)
+                        if tasks:
+                            task = sample(list(tasks), 1)[0]
+                            tasks_to_assign.append(task)
+                            used_themes.add(theme)
+                            break
 
-                # Додаткова перевірка на випадок, якщо фільтрованих завдань менше, ніж потрібно
-                count = min(count, len(filtered_tasks))
+                # Перевірка, чи достатньо завдань для вибору
+                if len(used_themes) == len(user_themes):
+                    break
 
-                if count > 0:
-                    selected_tasks = sample(list(filtered_tasks), count)
-                    tasks_to_assign.extend(selected_tasks)
-
-                    # Видаляємо вибрані завдання з розподілу
-                    tasks_by_points[point] -= len(selected_tasks)
-
-    # Отримуємо назви завдань
     task_names = [task.name for task in tasks_to_assign]
     return task_names
 
 
 def create_tasklist(username):
-    # user = settings.AUTH_USER_MODEL.objects.get(username=username)
     task_ids = select_user_tasks(username)
-    print("=====")
-    print(task_ids)
     tasklists = []
-
 
     for task_id in task_ids:
         task = Task.objects.get(name=task_id)
