@@ -1,8 +1,8 @@
 from Task.models import *
 from random import sample
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
-
-from random import sample
 
 def select_user_tasks(username):
     user_themes = UserTheme.objects.filter(user_id=username).values_list('theme_id', flat=True)
@@ -33,13 +33,14 @@ def select_user_tasks(username):
 
 
 def create_tasklist(username):
-    task_ids = select_user_tasks(username)
+    user = User.objects.get(username=username)
+    task_name = select_user_tasks(username)
     tasklists = []
 
-    for task_id in task_ids:
+    for task_id in task_name:
         task = Task.objects.get(name=task_id)
         tasklist = TaskList.objects.create(
-            user=username,
+            user=user,
             task=task,
             is_current=False,
             is_done=False,

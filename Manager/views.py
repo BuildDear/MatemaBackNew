@@ -259,10 +259,10 @@ class TaskListView(APIView):
             tasklist = create_tasklist(username)
 
             # Серіалізація даних списку завдань
-            serializer = TaskListSerializer(tasklist)
+            serializer = TaskListSerializer(tasklist, many=True)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        except settings.AUTH_USER_MODEL.DoesNotExist:
+        except User.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             # Для відловлення інших можливих помилок
