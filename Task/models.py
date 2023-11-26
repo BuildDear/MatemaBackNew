@@ -34,10 +34,7 @@ class Task(models.Model):
 class TaskList(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, to_field='username')
     task = models.ForeignKey(Task, on_delete=models.CASCADE, to_field='name')
-    is_current = models.BooleanField()
-    is_done = models.BooleanField()
     is_weekly = models.BooleanField()
-    point = models.IntegerField(null=True)
 
     class Meta:
         db_table = "TaskList"
@@ -49,3 +46,12 @@ class UserTheme(models.Model):
 
     class Meta:
         db_table = "UserTheme"
+
+
+class DoneTask(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, to_field='username')
+    theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name')
+    is_done = models.BooleanField()
+
+    class Meta:
+        db_table = "DoneTask"

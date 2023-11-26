@@ -42,10 +42,7 @@ def create_tasklist(username):
         tasklist = TaskList.objects.create(
             user=user,
             task=task,
-            is_current=False,
-            is_done=False,
             is_weekly=False,
-            point=0
         )
         tasklists.append(tasklist)
 
