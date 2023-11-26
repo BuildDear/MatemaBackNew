@@ -5,3 +5,5 @@ from django.core.wsgi import get_wsgi_application
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Matema.settings')
 
 application = get_wsgi_application()
+
+import MatemaBackNew.scheduler
