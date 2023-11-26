@@ -20,5 +20,4 @@ urlpatterns = [
 
     path('user_theme/create/', UserThemeCreateView.as_view(), name='user_theme-create'),
 
-    path('task_list/generate/', TaskListView.as_view(), name='task-list'),
 ]

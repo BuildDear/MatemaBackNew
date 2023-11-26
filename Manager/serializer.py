@@ -98,35 +98,3 @@ class TypeAnswerCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = TypeAnswer
         fields = "__all__"
-
-
-class UserThemeCreateSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = UserTheme
-        fields = "__all__"
-
-    def create(self, validated_data):
-        theme = validated_data.get('theme')
-        if not isinstance(theme, Theme):
-            raise serializers.ValidationError('Invalid theme instance.')
-
-        user = validated_data.get('user')
-        if not isinstance(user, User):
-            raise serializers.ValidationError('Invalid user instance.')
-
-        user_theme = UserTheme.objects.create(**validated_data)
-        return user_theme
-
-
-class TaskListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TaskList
-        fields = "__all__"
-
-
-class UserNameSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = settings.AUTH_USER_MODEL
-        fields = ['username']
-

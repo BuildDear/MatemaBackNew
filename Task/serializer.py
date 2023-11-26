@@ -1,6 +1,7 @@
 from Task.models import *
 from random import sample
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
 User = get_user_model()
 
 
@@ -49,20 +50,34 @@ def create_tasklist(username):
     return tasklists
 
 
-"""
-class GenerateUserTasksView(APIView):
- 
-    Клас відображення для отримання завдань для користувача.
- 
-    def get(self, request, *args, **kwargs):
-        # Перевірка, що користувач авторизований
-        user = request.user
-        if user.is_authenticated:
-            # Вибір завдань для користувача
-            tasks = select_tasks_for_user(user)
-            # Серіалізація завдань та відправлення відповіді
-            tasks_data = [{'name': task.name, 'points': task.point} for task in tasks]
-            return Response({'tasks': tasks_data})
-        else:
-            return Response({'error': 'Користувач не авторизований'}, status=401)
-"""
+class UserThemeCreateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserTheme
+        fields = "__all__"
+
+    def create(self, validated_data):
+        theme = validated_data.get('theme')
+        if not isinstance(theme, Theme):
+            raise serializers.ValidationError('Invalid theme instance.')
+
+        user = validated_data.get('user')
+        if not isinstance(user, User):
+            raise serializers.ValidationError('Invalid user instance.')
+
+        user_theme = UserTheme.objects.create(**validated_data)
+        return user_theme
+
+
+class TaskListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskList
+        fields = "__all__"
+
+
+class UserNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = settings.AUTH_USER_MODEL
+        fields = ['username']
+
+

@@ -12,4 +12,6 @@ urlpatterns = [
     path('auth/verify/<uidb64>/<token>/', views.activate_account, name='activate_account'),
 
     path('manager/', include('Manager.urls')),
+
+    path('task/', include('Task.urls')),
 ]
