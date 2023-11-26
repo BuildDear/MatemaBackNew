@@ -19,5 +19,4 @@ urlpatterns = [
     path('type_answer/edit/<int:pk>/', TypeAnswerEditView.as_view(), name='type_answer-edit'),
 
     path('user_theme/create/', UserThemeCreateView.as_view(), name='user_theme-create'),
-
 ]
