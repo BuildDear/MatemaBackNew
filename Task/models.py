@@ -52,6 +52,7 @@ class DoneTask(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, to_field='username')
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name')
     is_done = models.BooleanField()
+    datetime = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = "DoneTask"
