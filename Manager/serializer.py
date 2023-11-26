@@ -127,6 +127,6 @@ class TaskListSerializer(serializers.ModelSerializer):
 
 class UserNameSerializer(serializers.ModelSerializer):
     class Meta:
-        model = settings.AUTH_USER_MODEL  # Або конкретна модель, якщо ви не використовуєте стандартну модель користувача
+        model = settings.AUTH_USER_MODEL
         fields = ['username']
 

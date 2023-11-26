@@ -23,8 +23,8 @@ class TaskAdmin(admin.ModelAdmin):
 
 @admin.register(TaskList)
 class TaskListAdmin(admin.ModelAdmin):
-    list_display = ('user', 'task', 'is_current', 'is_done', 'is_weekly', 'point')
-    list_filter = ('is_current', 'is_done', 'is_weekly')
+    list_display = ('user', 'task', 'is_weekly')
+    list_filter = ('is_weekly',)
     search_fields = ('user__username', 'task__name')
 
 
