@@ -7,7 +7,7 @@ class User(AbstractUser):
     score = models.IntegerField(default=0)
     count_tasks = models.IntegerField(default=0)
 
-    photo = models.ImageField(upload_to='user_photos/', null=True, blank=True)
+    photo = models.ImageField(upload_to='user_photos/', null=True, blank=True, default='None')
 
     REQUIRED_FIELDS = ('email', 'first_name', 'last_name', 'password')
 

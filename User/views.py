@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.storage import default_storage
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils.http import urlsafe_base64_decode
 
 from User.serializers import UserPhotoSerializer
@@ -12,6 +12,9 @@ from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
+
+from User.models import User
+
 
 def activate_account(request, uidb64, token):
     """
@@ -50,6 +53,17 @@ def activate_account(request, uidb64, token):
     else:
         # If user does not exist or token is invalid, return an error message
         return HttpResponse('Activation link is invalid!')
+
+
+def check_user_active(request, username):
+    try:
+        user = User.objects.get(username=username)
+        if user.is_active:
+            return HttpResponse(status=200)
+        else:
+            return HttpResponse(status=401)
+    except User.DoesNotExist:
+        return HttpResponse("User does not exist", status=404)
 
 
 class UserPhotoCreateView(APIView):
