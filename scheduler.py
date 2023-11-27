@@ -23,19 +23,15 @@ def change_task_list():
         # Getting all tasks with even IDs
         even_id_tasks = [task for task in all_tasks if all_tasks.index(task) % 2 == 0]
 
-        # Printing information about tasks with even IDs
-        for task in even_id_tasks:
-            print(f"Task Name: {task.name}")
-            print(f"Task ID: {all_tasks.index(task)}")
-            print("------------")
     else:
         odd_id_tasks = [task for task in all_tasks if all_tasks.index(task) % 2 != 0]
 
-        # Printing information about tasks with odd IDs
-        for task in odd_id_tasks:
-            print(f"Task Name: {task.name}")
-            print(f"Task ID: {all_tasks.index(task)}")
-            print("------------")
+    # Printing information about tasks with odd IDs
+    for task in odd_id_tasks:
+        print(f"Task Name: {task.name}")
+        print(f"Task ID: {all_tasks.index(task)}")
+        print("------------")
+
 
 # Registering events and starting the scheduler
 register_events(scheduler)

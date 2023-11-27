@@ -28,6 +28,7 @@ INSTALLED_APPS = [
 
     'django_apscheduler',
 
+    'Statistic',
     'Task',
     'User.apps.UserConfig',
     'Manager'
