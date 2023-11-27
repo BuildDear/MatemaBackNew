@@ -28,3 +28,24 @@ class TaskListView(APIView):
         except Exception as e:
             # Для відловлення інших можливих помилок
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class TransferTaskView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request, username):
+        user = User.objects.get(username=username)
+        task_name = request.data.get('name')
+
+        try:
+            task = Task.objects.get(name=task_name)
+        except Task.DoesNotExist:
+            return Response({'message': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        DoneTask.objects.create(
+            user=user,
+            task=task,
+            is_done=True
+        )
+
+        return Response({"message": "Задача успішно перенесена"}, status=status.HTTP_200_OK)
