@@ -48,6 +48,6 @@ def create_tasklist(username):
 
 class TaskListSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TaskList
-        fields = "__all__"
+        model = DoneTask
+        fields = ['id', 'is_done', 'datetime', 'task_id', 'user_id']  # make sure 'is_weekly' is not in the fields list
 

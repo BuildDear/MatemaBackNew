@@ -14,4 +14,6 @@ urlpatterns = [
     path('manager/', include('Manager.urls')),
 
     path('task/', include('Task.urls')),
+
+    path('statistic/', include('Statistic.urls'))
 ]
