@@ -16,7 +16,7 @@ def select_user_tasks(username):
 
     for point, count in tasks_by_points.items():
         for _ in range(count):
-            for theme in user_themes:
+            for theme in range(5):
                 if theme not in used_themes:
                     tasks = Task.objects.filter(theme_id=theme, point=point).order_by('point')
                     if tasks:
