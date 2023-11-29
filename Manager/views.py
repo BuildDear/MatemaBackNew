@@ -58,7 +58,7 @@ class TaskCreateView(APIView):
 
                 try:
                     # Try to get the TypeAnswer instance based on the provided ID
-                    type_ans_instance = TypeAnswer.objects.get(name=request.data['type_ans'])
+                    type_ans_instance = TypeAnswer.objects.get(id=request.data['type_ans'])
                 except TypeAnswer.DoesNotExist:
                     # Return an error if the specified type_ans ID is not found
                     task.delete()  # Rollback the task creation

@@ -5,7 +5,7 @@ from Matema import settings
 
 
 class TypeAnswer(models.Model):
-    name = models.CharField(max_length=30, primary_key=True)
+    name = models.CharField(max_length=30)
 
     class Meta:
         db_table = "TypeAnswer"
@@ -23,7 +23,7 @@ class Task(models.Model):
     text = models.TextField()
     point = models.IntegerField()
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name')
-    type_ans = models.ForeignKey(TypeAnswer, on_delete=models.CASCADE, to_field='name')
+    type_ans = models.ForeignKey(TypeAnswer, on_delete=models.CASCADE)
 
     photo = models.ImageField(upload_to='task_photos/', blank=True, null=True)
 

@@ -1,12 +1,13 @@
 from Task.models import *
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-import  random
+import random
 User = get_user_model()
 
 
 def select_user_tasks(username):
     user_themes = list(UserTheme.objects.filter(user_id=username).values_list('theme_id', flat=True))
+    print(user_themes)
     random.shuffle(user_themes)  # Перемішування списку тем
     tasks_to_assign = []
     used_themes = set()  # Для зберігання тем, з яких вже вибрано завдання
@@ -16,13 +17,13 @@ def select_user_tasks(username):
 
     for point, count in tasks_by_points.items():
         for _ in range(count):
-            for theme in range(5):
-                if theme not in used_themes:
-                    tasks = Task.objects.filter(theme_id=theme, point=point).order_by('point')
+            for theme_id in user_themes:
+                if theme_id not in used_themes:
+                    tasks = Task.objects.filter(theme_id=theme_id, point=point).order_by('point')
                     if tasks:
                         task = random.choice(list(tasks))
                         tasks_to_assign.append(task)
-                        used_themes.add(theme)
+                        used_themes.add(theme_id)
                         break
 
             if len(used_themes) == len(user_themes):
@@ -38,7 +39,6 @@ def select_user_tasks(username):
 def create_tasklist(username):
     user = User.objects.get(username=username)
     task_name = select_user_tasks(username)
-    print(task_name)
     tasklists = []
 
     for task_id in task_name:
@@ -57,4 +57,3 @@ class TaskListSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskList
         fields = "__all__"
-
