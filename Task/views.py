@@ -60,8 +60,16 @@ class TransferTaskView(APIView):
         return Response({"message": "Task transfer successfully"}, status=status.HTTP_200_OK)
 
     def is_correct_answer(self, task, user_answer_data):
-        # Перевірка типу відповіді і порівняння з відповідями в базі даних
-        if (task.answer_mcq or task.answer_short) and 'correct_answer' in user_answer_data:
-            return True
+        # Перевірка типу відповіді на основі зв'язаної моделі TypeAnswer
+        answer_type = task.type_ans.name  # або task.type_ans.id, залежно від структури моделі
+        print(answer_type)
+        # Перевірка для MCQ типу відповіді
+        if answer_type == 'MCQ' and 'correct_answer' in user_answer_data:
+            print("hello")
+            correct_answer = task.answer_mcq['correct_answer']
+            user_answer = user_answer_data['correct_answer']
+            return user_answer == correct_answer
+
+        # Тут можна додати перевірки для інших типів відповідей
         return False
 
