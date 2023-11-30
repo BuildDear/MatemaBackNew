@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 
 class TaskView(APIView):
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def get(self, request):
         task = Task.objects.all()
