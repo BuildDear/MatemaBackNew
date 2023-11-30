@@ -35,8 +35,6 @@ def activate_account(request, uidb64, token):
     - An HttpResponse indicating whether the activation was successful or not. If successful, it notifies the user that
       they can now log in. If not, it informs them that the activation link is invalid.
     """
-
-
     try:
         # Decode the base64 encoded user ID and fetch the user
         uid = urlsafe_base64_decode(uidb64).decode()
