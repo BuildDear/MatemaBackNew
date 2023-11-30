@@ -1,29 +1,25 @@
 from rest_framework import serializers
 from django.core.exceptions import ValidationError
-from Task.models import Task, Theme, TypeAnswer
-
+from Task.models import *
 from User.models import User
 
 
 class TaskSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Task
         fields = "__all__"
 
 
 class ThemeSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Theme
         fields = "__all__"
 
 
 class TypeAnswerSerializer(serializers.ModelSerializer):
-
-   class Meta:
-       model = TypeAnswer
-       fields = "__all__"
+    class Meta:
+        model = TypeAnswer
+        fields = "__all__"
 
 
 class TaskCreateSerializer(serializers.ModelSerializer):
@@ -46,6 +42,18 @@ class TaskCreateSerializer(serializers.ModelSerializer):
         task = Task.objects.create(**validated_data)
 
         return task
+
+
+class TaskUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = '__all__'
+
+    def update(self, instance, validated_data):
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        return instance
 
 
 class ThemeCreateSerializer(serializers.ModelSerializer):
@@ -80,29 +88,36 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
 class TypeAnswerCreateSerializer(serializers.ModelSerializer):
 
-   def create_type_answer(self, name):
-       if TypeAnswer.objects.filter(id=name).exists():
-           raise ValidationError('A TypeAnswer with that name already exists.')
+    def create_type_answer(self, name):
+        if TypeAnswer.objects.filter(id=name).exists():
+            raise ValidationError('A TypeAnswer with that name already exists.')
 
-       type_ans = TypeAnswer.objects.create(name=name)
-       return type_ans
+        type_ans = TypeAnswer.objects.create(name=name)
+        return type_ans
 
-   class Meta:
-       model = TypeAnswer
-       fields = "__all__"
+    class Meta:
+        model = TypeAnswer
+        fields = "__all__"
 
 
-class TaskAnswerSerializer(serializers.Serializer):
-    answer_data = serializers.JSONField()
+class UserThemeCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserTheme
+        fields = "__all__"
 
-    def validate(self, data):
-        answer_data = data['answer_data']
+    def create(self, validated_data):
+        theme = validated_data.get('theme')
+        if not isinstance(theme, Theme):
+            raise serializers.ValidationError('Invalid theme instance.')
 
-        # Check if the provided JSON data is valid
-        if not isinstance(answer_data, dict):
-            raise serializers.ValidationError("Invalid answer data format")
+        user = validated_data.get('user')
+        if not isinstance(user, User):
+            raise serializers.ValidationError('Invalid user instance.')
 
-        return data
+        user_theme = UserTheme.objects.create(**validated_data)
+        return user_theme
+
+
 
 class TaskPhotoSerializer(serializers.ModelSerializer):
     class Meta:
@@ -110,18 +125,7 @@ class TaskPhotoSerializer(serializers.ModelSerializer):
         fields = ['photo']
 
 
-class TaskTypeSetSerializer(serializers.Serializer):
-    type_ans = serializers.CharField(max_length=50)
-
-    def validate_type_ans(self, value):
-        try:
-            # Try to get the TypeAnswer instance based on the provided type
-            type_ans_instance = TypeAnswer.objects.get(name=value)
-            return type_ans_instance
-        except TypeAnswer.DoesNotExist:
-            raise serializers.ValidationError("Invalid type_ans value.")
-
-class TypeAnswerSerializer(serializers.ModelSerializer):
+class UserNameSerializer(serializers.ModelSerializer):
     class Meta:
-        model = TypeAnswer
-        fields = ['name']
+        model = settings.AUTH_USER_MODEL
+        fields = ['username']

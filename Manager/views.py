@@ -255,6 +255,17 @@ class TypeAnswerEditView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class UserThemeCreateView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        serializer = UserThemeCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            user_theme = serializer.save()
+            return Response(UserThemeCreateSerializer(user_theme).data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 class UserListView(ListAPIView):
     """
     API view to list all users.
@@ -289,77 +300,6 @@ class UserDetailView(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
 
-
-class TaskAnswerCreateView(APIView):
-    permission_classes = (AllowAny,)
-
-    def post(self, request, pk):
-        try:
-            task = Task.objects.get(pk=pk)
-        except Task.DoesNotExist:
-            return Response({'message': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = TaskAnswerSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        answer_data = serializer.validated_data['answer_data']
-
-        # Determine the answer type based on the provided JSON structure
-        answer_type = None
-        if 'options' in answer_data and 'correct_answer' in answer_data:
-            answer_type = 'mcq'
-        elif 'pairs' in answer_data:
-            answer_type = 'matching'
-        elif 'correct_answer' in answer_data:
-            answer_type = 'short'
-
-        # Check if the determined answer type matches the type_ans of the task
-        if answer_type != task.type_ans.name:
-            return Response({'message': 'Invalid answer data structure for the task type'}, status=status.HTTP_400_BAD_REQUEST)
-
-        # Set the new answer based on the determined answer_type
-        if answer_type == 'mcq':
-            task.answer_matching = None
-            task.answer_short = None
-            task.answer_mcq = answer_data
-        elif answer_type == 'matching':
-            task.answer_mcq = None
-            task.answer_short = None
-            task.answer_matching = answer_data
-        elif answer_type == 'short':
-            task.answer_mcq = None
-            task.answer_matching = None
-            task.answer_short = answer_data
-
-        task.save()
-
-        return Response({'message': 'Answer added successfully'}, status=status.HTTP_200_OK)
-
-
-class TaskTypeSetView(APIView):
-    permission_classes = (AllowAny,)
-
-    def post(self, request, pk):
-        try:
-            task = Task.objects.get(pk=pk)
-        except Task.DoesNotExist:
-            return Response({'message': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = TaskTypeSetSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        # Get the TypeAnswer instance from the validated data
-        type_ans_instance = serializer.validated_data['type_ans']
-
-        # Set the new type_ans and delete existing answer data
-        task.type_ans = type_ans_instance
-        task.answer_matching = None
-        task.answer_short = None
-        task.answer_mcq = None
-
-        task.save()
-
-        return Response({'message': 'Type_ans set successfully and existing answer data deleted'}, status=status.HTTP_200_OK)
 
 class TaskPhotoCreateView(APIView):
     permission_classes = (AllowAny,)
