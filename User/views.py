@@ -16,6 +16,7 @@ from rest_framework.views import APIView
 from User.models import User
 
 
+
 def activate_account(request, uidb64, token):
     """
     Activate a user account.
