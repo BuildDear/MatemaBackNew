@@ -115,7 +115,6 @@ class UserThemeCreateSerializer(serializers.ModelSerializer):
         return user_theme
 
 
-
 class TaskPhotoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task

@@ -21,6 +21,7 @@ urlpatterns = [
     path('type_answer/create/', TypeAnswerCreateView.as_view(), name='create-type_answer'),
     path('type_answer/delete/<int:pk>/', TypeAnswerDeleteView.as_view(), name='delete-type_answer'),
     path('type_answer/edit/<int:pk>/', TypeAnswerEditView.as_view(), name='type_answer-edit'),
+
     path('type_answer/edit/<int:pk>/', TypeAnswerEditView.as_view(), name='type_answer-edit'),
 
     path('user/all/', UserListView.as_view(), name='view-user'),

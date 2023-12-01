@@ -19,7 +19,7 @@ class Theme(models.Model):
 
 
 class Task(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100, unique=True, primary_key=True)
     text = models.TextField()
     image_url = models.CharField(max_length=255)
     point = models.IntegerField()
@@ -32,19 +32,16 @@ class Task(models.Model):
 
 
 class TaskList(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    is_current = models.BooleanField()
-    is_done = models.BooleanField()
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, to_field='username')
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, to_field='name')
     is_weekly = models.BooleanField()
-    point = models.IntegerField(null=True)
 
     class Meta:
         db_table = "TaskList"
 
 
 class UserTheme(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, to_field='username')
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name')
 
     class Meta:
@@ -54,6 +51,7 @@ class UserTheme(models.Model):
 class DoneTask(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, to_field='username')
     task = models.ForeignKey(Task, on_delete=models.CASCADE, to_field='name')
+    theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name')
     is_done = models.BooleanField()
     datetime = models.DateTimeField(auto_now_add=True)
 
