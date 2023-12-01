@@ -51,7 +51,7 @@ class UserTheme(models.Model):
 class DoneTask(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, to_field='username')
     task = models.ForeignKey(Task, on_delete=models.CASCADE, to_field='name')
-    theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name')
+    theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name', null=True, blank=True)
     is_done = models.BooleanField()
     datetime = models.DateTimeField(auto_now_add=True)
 
