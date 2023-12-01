@@ -13,7 +13,7 @@ urlpatterns = [
 
     path('manager/', include('Manager.urls')),
 
-    path('user/', include('User.urls'))
+    path('user/', include('User.urls')),
 
     path('task/', include('Task.urls')),
 
