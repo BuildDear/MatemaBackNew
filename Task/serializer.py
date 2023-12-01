@@ -7,10 +7,10 @@ User = get_user_model()
 
 def select_user_tasks(username):
     user_themes = list(UserTheme.objects.filter(user_id=username).values_list('theme_id', flat=True))
-    print(user_themes)
     random.shuffle(user_themes)  # Перемішування списку тем
     tasks_to_assign = []
     used_themes = set()  # Для зберігання тем, з яких вже вибрано завдання
+    used_tasks = set()   # Для зберігання ID завдань, щоб уникнути дублікації
 
     tasks_by_points = {1: 2, 2: 2, 3: 1}
     total_required_tasks = sum(tasks_by_points.values())  # Загальна кількість необхідних завдань
@@ -18,13 +18,13 @@ def select_user_tasks(username):
     for point, count in tasks_by_points.items():
         for _ in range(count):
             for theme_id in user_themes:
-                if theme_id not in used_themes:
-                    tasks = Task.objects.filter(theme_id=theme_id, point=point).order_by('point')
-                    if tasks:
-                        task = random.choice(list(tasks))
-                        tasks_to_assign.append(task)
-                        used_themes.add(theme_id)
-                        break
+                tasks = Task.objects.filter(theme_id=theme_id, point=point).exclude(id__in=used_tasks).order_by('point')
+                if tasks:
+                    task = random.choice(list(tasks))
+                    tasks_to_assign.append(task)
+                    used_tasks.add(task.id)  # Зберігаємо ID завдання, щоб уникнути повторного використання
+                    used_themes.add(theme_id)
+                    break
 
             if len(used_themes) == len(user_themes):
                 break
