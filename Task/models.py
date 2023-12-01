@@ -19,13 +19,17 @@ class Theme(models.Model):
 
 
 class Task(models.Model):
-    name = models.CharField(max_length=100, unique=True, primary_key=True)
+    name = models.CharField(max_length=100, unique=True)
     text = models.TextField()
-    image_url = models.CharField(max_length=255)
     point = models.IntegerField()
     theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name')
     type_ans = models.ForeignKey(TypeAnswer, on_delete=models.CASCADE)
-    answer = models.TextField()
+
+    photo = models.ImageField(upload_to='task_photos/', blank=True, null=True)
+
+    answer_matching = models.JSONField(null=True)
+    answer_short = models.JSONField(null=True)
+    answer_mcq = models.JSONField(null=True)
 
     class Meta:
         db_table = "Task"
@@ -51,7 +55,6 @@ class UserTheme(models.Model):
 class DoneTask(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, to_field='username')
     task = models.ForeignKey(Task, on_delete=models.CASCADE, to_field='name')
-    theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name', null=True, blank=True)
     is_done = models.BooleanField()
     datetime = models.DateTimeField(auto_now_add=True)
 
