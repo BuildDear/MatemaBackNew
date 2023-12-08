@@ -57,3 +57,19 @@ class TaskListSerializer(serializers.ModelSerializer):
     class Meta:
         model = TaskList
         fields = "__all__"
+
+
+class DoneTaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DoneTask
+        fields = ['user', 'task', 'is_done', 'datetime']
+
+
+''' 
+class DoneTaskSerializer(serializers.ModelSerializer):
+    task_details = TaskSerializer(source='task', read_only=True)  # 'task' відповідає назві ForeignKey поля в моделі DoneTask
+
+    class Meta:
+        model = DoneTask
+        fields = ['user', 'task', 'is_done', 'datetime', 'task_details']
+'''

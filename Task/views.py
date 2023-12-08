@@ -60,10 +60,23 @@ class TransferTaskView(APIView):
 
     def is_correct_answer(self, task, user_answer):
 
-        answer_type = task.type_ans
+        if task.answer_mcq and 'correct_answer' in task.answer_mcq:
+            if task.answer_mcq['correct_answer'] == user_answer:
+                return True
 
-        if task.answer_mcq['correct_answer'] == user_answer:
-            return True
+        if task.answer_short and 'correct_answer' in task.answer_short:
+            correct_answers = task.answer_short['correct_answer']
+            if user_answer in correct_answers:
+                return True
 
         return False
 
+
+class UserDoneTasksView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request, username):
+        user = User.objects.get(username=username)
+        done_tasks = DoneTask.objects.filter(user=user)
+        serializer = DoneTaskSerializer(done_tasks, many=True)
+        return Response(serializer.data)
