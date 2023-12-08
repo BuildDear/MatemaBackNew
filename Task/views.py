@@ -36,7 +36,7 @@ class TransferTaskView(APIView):
     def post(self, request, username):
         user = User.objects.get(username=username)
         task_name = request.data.get('name')
-        user_answer_data = request.data.get('user_answer')  # Отримання даних відповіді користувача
+        user_answer = request.data.get('user_answer')
 
         try:
             task = Task.objects.get(name=task_name)
@@ -47,8 +47,7 @@ class TransferTaskView(APIView):
             return Response({'message': 'Task and user combination not found in TaskList'},
                             status=status.HTTP_404_NOT_FOUND)
 
-        # Перевірка відповіді користувача
-        if not self.is_correct_answer(task, user_answer_data):
+        if not self.is_correct_answer(task, user_answer):
             return Response({'message': 'Incorrect answer'}, status=status.HTTP_400_BAD_REQUEST)
 
         DoneTask.objects.create(
@@ -59,14 +58,12 @@ class TransferTaskView(APIView):
 
         return Response({"message": "Task transfer successfully"}, status=status.HTTP_200_OK)
 
-    def is_correct_answer(self, task, user_answer_data):
+    def is_correct_answer(self, task, user_answer):
 
-        answer_type = task['type_ans']
+        answer_type = task.type_ans
 
-        if answer_type == '1' and 'correct_answer' in user_answer_data:
-            correct_answer = task['answer_mcq']['correct_answer']
-            user_answer = user_answer_data['correct_answer']
-            return user_answer == correct_answer
+        if task.answer_mcq['correct_answer'] == user_answer:
+            return True
 
         return False
 
