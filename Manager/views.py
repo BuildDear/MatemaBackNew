@@ -11,9 +11,11 @@ from Task.serializer import *
 
 
 class TaskView(APIView):
+    # Allow requests from any users, authenticated or not
     permission_classes = (AllowAny,)
 
     def get(self, request):
+        # Retrieve all tasks from the database
         task = Task.objects.all()
         serializer = TaskSerializer(task, many=True)
         return Response(serializer.data)
@@ -23,9 +25,11 @@ class TaskSearchView(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
+        # Extract parameters from the request
         theme_name = request.query_params.get('theme_id')
         point = request.query_params.get('point')
 
+        # Filter tasks based on provided query parameters
         if theme_name and point:
             tasks = Task.objects.filter(theme_id=theme_name, point=point)
         elif theme_name:
@@ -33,6 +37,7 @@ class TaskSearchView(APIView):
         elif point:
             tasks = Task.objects.filter(point=point)
         else:
+            # Respond with an error message if required parameters are missing
             return Response({"message": "Invalid or missing parameters."}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = TaskSerializer(tasks, many=True)
@@ -48,27 +53,23 @@ class TaskCreateView(APIView):
         if serializer.is_valid():
             task = serializer.save()
 
-            # Check if answer data is present
+            # Handle the creation of a new task with answer data
             if 'answer_data' in request.data:
                 answer_data = request.data['answer_data']
 
-                # Check if type_ans is present
                 if 'type_ans' not in request.data:
-                    # Return an error if type_ans is not specified when adding an answer
                     task.delete()  # Rollback the task creation
                     return Response({'message': 'Type_ans must be specified when adding an answer'},
                                     status=status.HTTP_400_BAD_REQUEST)
 
                 try:
-                    # Try to get the TypeAnswer instance based on the provided ID
                     type_ans_instance = TypeAnswer.objects.get(id=request.data['type_ans'])
                 except TypeAnswer.DoesNotExist:
-                    # Return an error if the specified type_ans ID is not found
-                    task.delete()  # Rollback the task creation
+                    task.delete()  # Rollback task creation if type_ans ID is invalid
                     return Response({'message': 'Invalid type_ans ID'},
                                     status=status.HTTP_400_BAD_REQUEST)
 
-                # Determine the answer type based on the provided JSON structure
+                # Determining the answer type based on answer_data structure
                 answer_type = None
                 if 'options' in answer_data and 'correct_answer' in answer_data:
                     answer_type = 'mcq'
@@ -77,14 +78,12 @@ class TaskCreateView(APIView):
                 elif 'correct_answer' in answer_data:
                     answer_type = 'short'
 
-                # Check if the determined answer type matches the specified type_ans
                 if answer_type != type_ans_instance.name:
-                    # Return an error if the answer type doesn't match the specified type_ans
-                    task.delete()  # Rollback the task creation
+                    task.delete()  # Rollback task creation if answer data doesn't match type_ans
                     return Response({'message': 'Invalid answer data structure for the specified type_ans'},
                                     status=status.HTTP_400_BAD_REQUEST)
 
-                # Set the new answer based on the determined answer_type
+                # Set appropriate answer field based on determined answer type
                 if answer_type == 'mcq':
                     task.answer_matching = None
                     task.answer_short = None
@@ -98,12 +97,12 @@ class TaskCreateView(APIView):
                     task.answer_matching = None
                     task.answer_short = answer_data
 
-                task.type_ans = type_ans_instance  # Set the TypeAnswer instance
-
+                task.type_ans = type_ans_instance
                 task.save()
 
             return Response(TaskCreateSerializer(task).data, status=status.HTTP_201_CREATED)
 
+        # Return serializer errors if data validation fails
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
