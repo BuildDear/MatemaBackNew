@@ -43,4 +43,4 @@ class UserPhotoSerializer(serializers.ModelSerializer):
 class UserScoreSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'username', 'score']
+        fields = ['score']
