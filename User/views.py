@@ -5,6 +5,8 @@ from django.core.files.storage import default_storage
 from django.http import HttpResponse
 from django.utils.http import urlsafe_base64_decode
 
+from Task.models import Task
+from Task.serializer import TaskSerializer
 from User.serializers import UserPhotoSerializer, UserScoreSerializer
 
 from rest_framework.response import Response
@@ -141,4 +143,17 @@ class UserScoreView(APIView):
         user = request.user
 
         serializer = UserScoreSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserGetTaskView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, task_id, *args, **kwargs):
+        try:
+            task = Task.objects.get(id=task_id)
+        except Task.DoesNotExist:
+            return Response({'detail': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = TaskSerializer(task)
         return Response(serializer.data, status=status.HTTP_200_OK)
