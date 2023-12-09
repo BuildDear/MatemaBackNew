@@ -38,3 +38,9 @@ class UserPhotoSerializer(serializers.ModelSerializer):
         fields = ['photo']
         # Add this line if the photo field allows null values
         extra_kwargs = {'photo': {'allow_null': True}}
+
+
+class UserScoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'username', 'score']
