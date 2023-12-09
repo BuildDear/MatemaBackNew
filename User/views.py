@@ -2,10 +2,12 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.storage import default_storage
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.utils.http import urlsafe_base64_decode
 
-from User.serializers import UserPhotoSerializer
+from Task.models import Task
+from Task.serializer import TaskSerializer
+from User.serializers import UserPhotoSerializer, UserScoreSerializer
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -132,3 +134,26 @@ class UserPhotoRetrieveView(APIView):
             return Response({'photo_url': user.photo.url}, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'User does not have a photo'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class UserScoreView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        serializer = UserScoreSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class UserGetTaskView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, task_id, *args, **kwargs):
+        try:
+            task = Task.objects.get(id=task_id)
+        except Task.DoesNotExist:
+            return Response({'detail': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = TaskSerializer(task)
+        return Response(serializer.data, status=status.HTTP_200_OK)

@@ -83,6 +83,17 @@ class TaskListSerializer(serializers.ModelSerializer):
         model = TaskList
         fields = "__all__"
 
+class TypeAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TypeAnswer
+        fields = ['name']
+
+class TaskSerializer(serializers.ModelSerializer):
+    type_ans = TypeAnswerSerializer()
+
+    class Meta:
+        model = Task
+        fields = ['id', 'name', 'text', 'point', 'photo', 'answer_matching', 'answer_short', 'answer_mcq', 'theme', 'type_ans']
 
 class UserThemeCreateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -106,3 +117,4 @@ class UserNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = settings.AUTH_USER_MODEL
         fields = ['username']
+
