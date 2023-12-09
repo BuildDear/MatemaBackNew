@@ -28,19 +28,16 @@ class TaskCreateSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def create(self, validated_data):
-        if Task.objects.filter(name=validated_data['name']).exists():
-            raise serializers.ValidationError('A task with that name already exists.')
-
         theme = validated_data.get('theme')
         if not isinstance(theme, Theme):
-            raise serializers.ValidationError('Invalid ID for theme.')
+            raise serializers.ValidationError('Invalid theme instance.')
 
+        # Перевірка type_ans
         type_ans = validated_data.get('type_ans')
         if not isinstance(type_ans, TypeAnswer):
-            raise serializers.ValidationError('Invalid ID for type_ans.')
+            raise serializers.ValidationError('Invalid type_ans instance.')
 
         task = Task.objects.create(**validated_data)
-
         return task
 
 
@@ -116,7 +113,6 @@ class UserThemeCreateSerializer(serializers.ModelSerializer):
 
         user_theme = UserTheme.objects.create(**validated_data)
         return user_theme
-
 
 
 class TaskPhotoSerializer(serializers.ModelSerializer):

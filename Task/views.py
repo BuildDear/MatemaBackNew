@@ -30,6 +30,7 @@ class TaskListView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+
 class TransferTaskView(APIView):
     permission_classes = (AllowAny,)
 
@@ -64,3 +65,4 @@ class TransferTaskView(APIView):
         if (task.answer_mcq or task.answer_short) and 'correct_answer' in user_answer_data:
             return True
         return False
+
