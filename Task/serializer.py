@@ -59,7 +59,14 @@ class TaskListSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class TypeAnswerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TypeAnswer
+        fields = ['name']
+
 class TaskSerializer(serializers.ModelSerializer):
+    type_ans = TypeAnswerSerializer()
+
     class Meta:
         model = Task
-        fields = "__all__"
+        fields = ['id', 'name', 'text', 'point', 'photo', 'answer_matching', 'answer_short', 'answer_mcq', 'theme', 'type_ans']
