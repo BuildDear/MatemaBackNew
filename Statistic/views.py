@@ -34,27 +34,27 @@ class UserTaskWeekView(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request, user_id, format=None):
-        # Кількість виконаних завдань за кожен день тижня
+        # The number of completed halls for the evening day
         weekly_done_tasks = DoneTask.objects.filter(
             user_id=user_id,
             is_done=True,
             datetime__gte=timezone.now() - timedelta(days=7)
         ).extra({'day': 'date(datetime)'}).values('day').annotate(count=Count('id'))
 
-        # Словник, де ключ - це день тижня, а значення - кількість виконаних завдань
+        # A dictionary where the key is the day of the week and the value is the number of completed tasks
         weekly_done_tasks_dict = {entry['day']: entry['count'] for entry in weekly_done_tasks}
 
-        # Заповнюєм нулями дні, коли не було виконано жодного завдання
+        # We fill with zeros the days when no task was completed
         today = timezone.now().date()
         days_of_week = [today - timedelta(days=i) for i in range(7)]
         for day in days_of_week:
             if day not in weekly_done_tasks_dict:
                 weekly_done_tasks_dict[day] = 0
 
-        # Сортуємо словник за днями тижня
+        # We sort the dictionary by days of the week
         sorted_weekly_done_tasks = sorted(weekly_done_tasks_dict.items())
 
-        # Готуємо дані для відправлення через серіалізатор
+        # We are preparing data for sending through the serializer
         result_data = [{'day': str(day), 'count': count} for day, count in sorted_weekly_done_tasks]
 
         return Response(result_data)
