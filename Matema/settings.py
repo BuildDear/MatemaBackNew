@@ -1,16 +1,27 @@
-import django
+from datetime import timedelta
+
 from pathlib import Path
 from decouple import config
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('DJANGO_SECRET_KEY')
 
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+CSRF_TRUSTED_ORIGINS = ['https://matema-dev-ncrzmugb6q-lm.a.run.app']
+
+CSRF_COOKIE_DOMAIN = 'matema-dev-ncrzmugb6q-lm.a.run.app'
+
+CORS_ORIGIN_WHITELIST = (
+    'https://matema-dev-ncrzmugb6q-lm.a.run.app',
+)
+
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -25,7 +36,11 @@ INSTALLED_APPS = [
     'corsheaders',
     'rest_framework_simplejwt',
     'djoser',
+    'drf_yasg',
 
+    'django_apscheduler',
+
+    'Statistic',
     'Task',
     'User.apps.UserConfig',
     'Manager'
@@ -72,8 +87,8 @@ DATABASES = {
         'NAME': config('SQL_NAME'),
         'USER': config('SQL_USER'),
         'PASSWORD': config('SQL_PASSWORD'),
-        'HOST': config('SQL_HOST'),  # or your PostgreSQL host address
-        'PORT': config('SQL_PORT'),  # or your PostgreSQL port
+        'HOST': config('SQL_HOST'),
+        'PORT': config('SQL_PORT'),
     }
 }
 
@@ -100,13 +115,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/4.2/howto/static-files/
-
 STATIC_URL = 'static/'
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 #########################################################################
 
@@ -133,7 +142,21 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 SIMPLE_JWT = {
-   'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "UPDATE_LAST_LOGIN": False,
+
+    "ALGORITHM": "HS256",
+    "VERIFYING_KEY": "",
+    "AUDIENCE": None,
+    "ISSUER": None,
+    "JSON_ENCODER": None,
+    "JWK_URL": None,
+    "LEEWAY": 0,
 }
 
 DJOSER = {
@@ -147,7 +170,6 @@ DJOSER = {
         'user_create': 'User.serializers.CustomUserCreateSerializer',
     },
 }
-
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True

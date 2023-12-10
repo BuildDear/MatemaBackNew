@@ -1,4 +1,6 @@
+from django.core.files.storage import default_storage
 from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import status
@@ -8,9 +10,11 @@ from Task.serializer import *
 
 
 class TaskView(APIView):
+    # Allow requests from any users, authenticated or not
     permission_classes = (AllowAny,)
 
     def get(self, request):
+        # Retrieve all tasks from the database
         task = Task.objects.all()
         serializer = TaskSerializer(task, many=True)
         return Response(serializer.data)
@@ -20,9 +24,11 @@ class TaskSearchView(APIView):
     permission_classes = (AllowAny,)
 
     def get(self, request):
+        # Extract parameters from the request
         theme_name = request.query_params.get('theme_id')
         point = request.query_params.get('point')
 
+        # Filter tasks based on provided query parameters
         if theme_name and point:
             tasks = Task.objects.filter(theme_id=theme_name, point=point)
         elif theme_name:
@@ -30,6 +36,7 @@ class TaskSearchView(APIView):
         elif point:
             tasks = Task.objects.filter(point=point)
         else:
+            # Respond with an error message if required parameters are missing
             return Response({"message": "Invalid or missing parameters."}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = TaskSerializer(tasks, many=True)
@@ -45,7 +52,7 @@ class TaskCreateView(APIView):
 
         if serializer.is_valid():
             task = serializer.save()
-
+            
             # Check if answer data is present
             if 'answer_data' in request.data:
                 answer_data = request.data['answer_data']
@@ -66,7 +73,6 @@ class TaskCreateView(APIView):
                     return Response({'message': 'Invalid type_ans ID'},
                                     status=status.HTTP_400_BAD_REQUEST)
 
-                # Determine the answer type based on the provided JSON structure
                 answer_type = None
                 if 'options' in answer_data and 'correct_answer' in answer_data:
                     answer_type = 'mcq'
@@ -89,12 +95,13 @@ class TaskCreateView(APIView):
                     task.answer_matching = None
                     task.answer_short = answer_data
 
-                task.type_ans = type_ans_instance  # Set the TypeAnswer instance
 
+                task.type_ans = type_ans_instance
                 task.save()
 
             return Response(TaskCreateSerializer(task).data, status=status.HTTP_201_CREATED)
 
+        # Return serializer errors if data validation fails
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -291,4 +298,72 @@ class UserDetailView(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserDetailSerializer
 
-#################################
+
+class TaskPhotoCreateView(APIView):
+    permission_classes = (AllowAny,)
+    parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request, pk):
+        try:
+            task = Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            return Response({'message': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if task.photo:
+            task.photo.delete()
+
+        photo = request.data.get('photo')
+
+        # Extract the original file extension
+        original_extension = photo.name.split('.')[-1]
+
+        # Generate a new file name with the original extension
+        file_name = f"{task.name}_ID{task.id}.{original_extension}"
+
+        # Save the photo with the new file name
+        task.photo.save(file_name, photo)
+
+        serializer = TaskPhotoSerializer(task)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class TaskPhotoDeleteView(APIView):
+    permission_classes = (AllowAny,)
+
+    def delete(self, request, pk):
+        try:
+            task = Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            return Response({'message': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if task.photo:
+            file_path = task.photo.path
+            default_storage.delete(file_path)
+
+            task.photo = None
+            task.save()
+
+            return Response({'message': 'Task photo deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        else:
+            return Response({'message': 'Task does not have a photo'}, status=status.HTTP_404_NOT_FOUND)
+
+
+class TaskPhotoRetrieveView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request, pk):
+        try:
+            task = Task.objects.get(pk=pk)
+        except Task.DoesNotExist:
+            return Response({'message': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        if task.photo:
+
+            # Return the photo URL or other information
+            serializer = TaskPhotoSerializer(task)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'Task does not have a photo'}, status=status.HTTP_404_NOT_FOUND)
+
+
+
