@@ -5,7 +5,6 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 from rest_framework import status
 from .serializer import *
-from User.models import *
 from rest_framework.response import Response
 from Task.serializer import *
 
@@ -44,6 +43,7 @@ class TaskSearchView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
 class TaskCreateView(APIView):
     permission_classes = (AllowAny,)
 
@@ -52,24 +52,27 @@ class TaskCreateView(APIView):
 
         if serializer.is_valid():
             task = serializer.save()
-
-            # Handle the creation of a new task with answer data
+            
+            # Check if answer data is present
             if 'answer_data' in request.data:
                 answer_data = request.data['answer_data']
 
+                # Check if type_ans is present
                 if 'type_ans' not in request.data:
+                    # Return an error if type_ans is not specified when adding an answer
                     task.delete()  # Rollback the task creation
                     return Response({'message': 'Type_ans must be specified when adding an answer'},
                                     status=status.HTTP_400_BAD_REQUEST)
 
                 try:
+                    # Try to get the TypeAnswer instance based on the provided ID
                     type_ans_instance = TypeAnswer.objects.get(id=request.data['type_ans'])
                 except TypeAnswer.DoesNotExist:
-                    task.delete()  # Rollback task creation if type_ans ID is invalid
+                    # Return an error if the specified type_ans ID is not found
+                    task.delete()  # Rollback the task creation
                     return Response({'message': 'Invalid type_ans ID'},
                                     status=status.HTTP_400_BAD_REQUEST)
 
-                # Determining the answer type based on answer_data structure
                 answer_type = None
                 if 'options' in answer_data and 'correct_answer' in answer_data:
                     answer_type = 'mcq'
@@ -78,12 +81,7 @@ class TaskCreateView(APIView):
                 elif 'correct_answer' in answer_data:
                     answer_type = 'short'
 
-                if answer_type != type_ans_instance.name:
-                    task.delete()  # Rollback task creation if answer data doesn't match type_ans
-                    return Response({'message': 'Invalid answer data structure for the specified type_ans'},
-                                    status=status.HTTP_400_BAD_REQUEST)
-
-                # Set appropriate answer field based on determined answer type
+                # Set the new answer based on the determined answer_type
                 if answer_type == 'mcq':
                     task.answer_matching = None
                     task.answer_short = None
@@ -96,6 +94,7 @@ class TaskCreateView(APIView):
                     task.answer_mcq = None
                     task.answer_matching = None
                     task.answer_short = answer_data
+
 
                 task.type_ans = type_ans_instance
                 task.save()
@@ -366,4 +365,5 @@ class TaskPhotoRetrieveView(APIView):
         else:
             return Response({'message': 'Task does not have a photo'}, status=status.HTTP_404_NOT_FOUND)
 
-#################################
+
+
