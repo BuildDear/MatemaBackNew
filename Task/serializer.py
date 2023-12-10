@@ -38,24 +38,20 @@ def select_user_tasks(username):
     tasks_to_assign = []
     used_themes = set()  # Для зберігання тем, з яких вже вибрано завдання
 
-    if len(user_themes) == 6:
-        tasks_by_points = {1: 2, 2: 2, 3: 1}
+    tasks_by_points = {1: 2, 2: 2, 3: 1}
+    for point, count in tasks_by_points.items():
+        for _ in range(count):
+            for theme in user_themes:
+                if theme not in used_themes:
+                    tasks = Task.objects.filter(theme_id=theme, point=point).order_by('point')
+                    if tasks:
+                        task = sample(list(tasks), 1)[0]
+                        tasks_to_assign.append(task)
+                        used_themes.add(theme)
+                        break
 
-        for point, count in tasks_by_points.items():
-            for _ in range(count):
-                for theme in user_themes:
-                    if theme not in used_themes:
-                        tasks = Task.objects.filter(theme_id=theme, point=point).order_by('point')
-
-                        if tasks:
-                            task = sample(list(tasks), 1)[0]
-                            tasks_to_assign.append(task)
-                            used_themes.add(theme)
-                            break
-
-                # Перевірка, чи достатньо завдань для вибору
-                if len(used_themes) == len(user_themes):
-                    break
+            if len(used_themes) == len(user_themes):
+                break
 
     task_names = [task.name for task in tasks_to_assign]
     return task_names
@@ -79,6 +75,11 @@ def create_tasklist(username):
 
 
 class TaskListSerializer(serializers.ModelSerializer):
+    theme_name = serializers.CharField(source='task.theme.name', read_only=True)
+    class Meta:
+        model = DoneTask
+        fields = ['id', 'datetime', 'task_id', 'user_id', 'theme_name']
+
     class Meta:
         model = TaskList
         fields = "__all__"
@@ -117,4 +118,5 @@ class UserNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = settings.AUTH_USER_MODEL
         fields = ['username']
+
 

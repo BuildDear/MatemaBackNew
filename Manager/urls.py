@@ -28,5 +28,4 @@ urlpatterns = [
     path('user/all/', UserListView.as_view(), name='view-user'),
 
     path('user_theme/create/', UserThemeCreateView.as_view(), name='user_theme-create'),
-
 ]

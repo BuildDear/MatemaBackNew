@@ -28,6 +28,7 @@ urlpatterns = [
     path('manager/', include('Manager.urls')),
     path('user/', include('User.urls')),
     path('task/', include('Task.urls')),
+    path('statistic/', include('Statistic.urls'))
 
     # Swagger URLs
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),

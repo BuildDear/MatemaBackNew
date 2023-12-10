@@ -30,7 +30,6 @@ class TaskListView(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
 class TransferTaskView(APIView):
     permission_classes = (AllowAny,)
 
@@ -38,7 +37,7 @@ class TransferTaskView(APIView):
         user = User.objects.get(username=username)
         task_name = request.data.get('name')
         user_answer_data = request.data.get('user_answer')  # Отримання даних відповіді користувача
-
+        
         try:
             task = Task.objects.get(name=task_name)
         except Task.DoesNotExist:
@@ -57,7 +56,7 @@ class TransferTaskView(APIView):
             task=task,
             is_done=True
         )
-
+        
         return Response({"message": "Task transfer successfully"}, status=status.HTTP_200_OK)
 
     def is_correct_answer(self, task, user_answer_data):

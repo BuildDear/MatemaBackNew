@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'djoser',
     'drf_yasg',
 
+    'django_apscheduler',
+
+    'Statistic',
     'Task',
     'User.apps.UserConfig',
     'Manager'
