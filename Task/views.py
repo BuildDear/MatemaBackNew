@@ -47,29 +47,49 @@ class TransferTaskView(APIView):
             return Response({'message': 'Task and user combination not found in TaskList'},
                             status=status.HTTP_404_NOT_FOUND)
 
+        correct_count = self.is_correct_answer(task, user_answer)
+
         if not self.is_correct_answer(task, user_answer):
             return Response({'message': 'Incorrect answer'}, status=status.HTTP_400_BAD_REQUEST)
+
+        mark = self.type_answer(task, correct_count)
 
         DoneTask.objects.create(
             user=user,
             task=task,
-            is_done=True
+            is_done=True,
+            mark=mark
         )
 
         return Response({"message": "Task transfer successfully"}, status=status.HTTP_200_OK)
 
     def is_correct_answer(self, task, user_answer):
+        correct_count = 0
 
         if task.answer_mcq and 'correct_answer' in task.answer_mcq:
             if task.answer_mcq['correct_answer'] == user_answer:
-                return True
+                correct_count = 1
 
-        if task.answer_short and 'correct_answer' in task.answer_short:
+        elif task.answer_short and 'correct_answer' in task.answer_short:
             correct_answers = task.answer_short['correct_answer']
             if user_answer in correct_answers:
-                return True
+                correct_count = 2
 
-        return False
+        elif task.answer_matching and 'pairs' in task.answer_matching:
+            correct_pairs = task.answer_matching['pairs']
+            for pair in user_answer:
+                if pair in correct_pairs:
+                    correct_count += 1
+
+        return correct_count
+
+    def type_answer(self, task, correct_count):
+        if task.answer_mcq:
+            return 1
+        elif task.answer_short:
+            return 2
+        elif task.answer_matching:
+            return min(correct_count, 3)
 
 
 class UserDoneTasksView(APIView):
