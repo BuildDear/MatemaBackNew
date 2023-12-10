@@ -8,44 +8,56 @@ class TypeAnswer(models.Model):
     name = models.CharField(max_length=30)
 
     class Meta:
-        db_table = "type_answer"
+        db_table = "TypeAnswer"
 
 
 class Theme(models.Model):
-    name = models.CharField(max_length=30)
+    name = models.CharField(max_length=30, primary_key=True)
 
     class Meta:
-        db_table = "them"
+        db_table = "Theme"
 
 
 class Task(models.Model):
     name = models.CharField(max_length=100, unique=True)
     text = models.TextField()
-    image_url = models.CharField(max_length=255)
     point = models.IntegerField()
-    them = models.ForeignKey(Theme, on_delete=models.CASCADE)
-    type = models.ForeignKey(TypeAnswer, on_delete=models.CASCADE)
-    answer = models.TextField()
+    theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name')
+    type_ans = models.ForeignKey(TypeAnswer, on_delete=models.CASCADE)
+
+    photo = models.ImageField(upload_to='task_photos/', blank=True, null=True)
+
+    answer_matching = models.JSONField(null=True)
+    answer_short = models.JSONField(null=True)
+    answer_mcq = models.JSONField(null=True)
 
     class Meta:
         db_table = "Task"
 
 
 class TaskList(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    is_current = models.BooleanField()
-    is_done = models.BooleanField()
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, to_field='username')
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, to_field='name')
     is_weekly = models.BooleanField()
-    point = models.IntegerField(null=True)
 
     class Meta:
         db_table = "TaskList"
 
 
 class UserTheme(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    them = models.ForeignKey(Theme, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, to_field='username')
+    theme = models.ForeignKey(Theme, on_delete=models.CASCADE, to_field='name')
 
     class Meta:
         db_table = "UserTheme"
+
+
+class DoneTask(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, to_field='username')
+    task = models.ForeignKey(Task, on_delete=models.CASCADE, to_field='name')
+    is_done = models.BooleanField()
+    datetime = models.DateTimeField(auto_now_add=True)
+    mark = models.IntegerField()
+
+    class Meta:
+        db_table = "DoneTask"

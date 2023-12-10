@@ -5,29 +5,13 @@ from .models import User
 from djoser.serializers import UserCreateSerializer
 
 
-class UserListSerializer(serializers.ModelSerializer):
-    """List of users"""
-
-    class Meta:
-        model = User
-        fields = "__all__"
-
-
-class UserDetailSerializer(serializers.ModelSerializer):
-    """All user"""
-
-    class Meta:
-        model = User
-        fields = "__all__"
-
-
 class CustomUserCreateSerializer(UserCreateSerializer):
     """Registration user"""
     re_password = serializers.CharField(write_only=True, required=True, style={'input_type': 'password'})
 
     class Meta:
         model = User
-        fields = ("username", "first_name", "last_name", "email", "password", "password2")
+        fields = ("username", "first_name", "last_name", "email", "password", "re_password")
         extra_kwargs = {"password": {"write_only": True, "required": True, "validators": [validate_password]}, }
 
     def validate(self, attrs):
@@ -46,3 +30,17 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             user.set_password(validated_data["password"])
             user.save()
             return user
+
+
+class UserPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['photo']
+        # Add this line if the photo field allows null values
+        extra_kwargs = {'photo': {'allow_null': True}}
+
+
+class UserScoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['score']
