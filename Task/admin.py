@@ -31,4 +31,6 @@ class TaskListAdmin(admin.ModelAdmin):
 @admin.register(UserTheme)
 class UserThemeAdmin(admin.ModelAdmin):
     list_display = ('user', 'theme')
-    search_fields = ('user__username', 'theme__name')
+    search_fields = ('user__username', 'them__name')
+
+

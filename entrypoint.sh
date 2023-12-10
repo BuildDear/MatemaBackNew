@@ -4,7 +4,7 @@
 set -e
 
 # Створення міграцій
-python manage.py makemigrations
+python manage.py makemigrations --noinput
 
 # Виконання міграцій
 python manage.py migrate --noinput

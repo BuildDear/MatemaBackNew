@@ -5,21 +5,18 @@ from User.models import User
 
 
 class TaskSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Task
         fields = "__all__"
 
 
 class ThemeSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Theme
         fields = "__all__"
 
 
 class TypeAnswerSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = TypeAnswer
         fields = "__all__"
@@ -102,10 +99,6 @@ class TypeAnswerCreateSerializer(serializers.ModelSerializer):
 
 class UserThemeCreateSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = UserTheme
-        fields = "__all__"
-
     def create(self, validated_data):
         theme = validated_data.get('theme')
         if not isinstance(theme, Theme):
@@ -117,6 +110,16 @@ class UserThemeCreateSerializer(serializers.ModelSerializer):
 
         user_theme = UserTheme.objects.create(**validated_data)
         return user_theme
+      
+    class Meta:
+        model = UserTheme
+        fields = "__all__"
+
+
+class TaskPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Task
+        fields = ['photo']
 
 
 class UserNameSerializer(serializers.ModelSerializer):

@@ -30,3 +30,17 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             user.set_password(validated_data["password"])
             user.save()
             return user
+
+
+class UserPhotoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['photo']
+        # Add this line if the photo field allows null values
+        extra_kwargs = {'photo': {'allow_null': True}}
+
+
+class UserScoreSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['score']
