@@ -41,6 +41,9 @@ pycparser==2.21
 python-decouple==3.8
 requests==2.31.0
 urllib3==2.0.7
+psycopg==3.1.12
+psycopg2==2.9.9
+Pillow==10.1.0
 
 
     # Timezone Data
@@ -58,3 +61,4 @@ Pillow==10.1.0
 
     # SQL Parsing
 sqlparse==0.4.4
+
