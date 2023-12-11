@@ -47,9 +47,8 @@ class TransferTaskView(APIView):
             return Response({'message': 'Task and user combination not found in TaskList'},
                             status=status.HTTP_404_NOT_FOUND)
 
-
         correct_count = self.is_correct_answer(task, user_answer)
-        
+
         if not self.is_correct_answer(task, user_answer):
             return Response({'message': 'Incorrect answer'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -61,17 +60,9 @@ class TransferTaskView(APIView):
             is_done=True,
             mark=mark
         )
-        
-        return Response({"message": "Task transfer successfully"}, status=status.HTTP_200_OK)
-
-    def is_correct_answer(self, task, user_answer_data):
-        # Перевірка типу відповіді і порівняння з відповідями в базі даних
-        if (task.answer_mcq or task.answer_short) and 'correct_answer' in user_answer_data:
-            return True
-        return False
-
 
         return Response({"message": "Task transfer successfully"}, status=status.HTTP_200_OK)
+
 
     def is_correct_answer(self, task, user_answer):
         correct_count = 0
@@ -110,4 +101,3 @@ class UserDoneTasksView(APIView):
         done_tasks = DoneTask.objects.filter(user=user)
         serializer = DoneTaskSerializer(done_tasks, many=True)
         return Response(serializer.data)
-
