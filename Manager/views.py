@@ -11,7 +11,7 @@ from Task.serializer import *
 
 class TaskView(APIView):
     # Allow requests from any users, authenticated or not
-    permission_classes = (AllowAny,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         # Retrieve all tasks from the database
