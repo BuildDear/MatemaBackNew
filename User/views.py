@@ -18,7 +18,6 @@ from rest_framework.views import APIView
 from User.models import User
 
 
-
 def activate_account(request, uidb64, token):
     """
     Activate a user account.
@@ -38,6 +37,7 @@ def activate_account(request, uidb64, token):
     - An HttpResponse indicating whether the activation was successful or not. If successful, it notifies the user that
       they can now log in. If not, it informs them that the activation link is invalid.
     """
+
     try:
         # Decode the base64 encoded user ID and fetch the user
         uid = urlsafe_base64_decode(uidb64).decode()
@@ -57,7 +57,7 @@ def activate_account(request, uidb64, token):
         return HttpResponse('Activation link is invalid!')
 
 
-def check_user_active(request, username):
+def check_user_active(username):
     try:
         user = User.objects.get(username=username)
         if user.is_active:
@@ -68,9 +68,18 @@ def check_user_active(request, username):
         return HttpResponse("User does not exist", status=404)
 
 
-class UserPhotoCreateView(APIView):
+class UserPhotoView(APIView):
     permission_classes = (IsAuthenticated,)
     parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request):
+        user = request.user
+
+        if user.photo:
+            # Return the photo URL or other information
+            return Response({'photo_url': user.photo.url}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'User does not have a photo'}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, *args, **kwargs):
         user = request.user
@@ -98,10 +107,6 @@ class UserPhotoCreateView(APIView):
         # Return the serialized data directly
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-class UserPhotoDeleteView(APIView):
-    permission_classes = (IsAuthenticated,)
-
     def delete(self, request):
         user = request.user
 
@@ -119,19 +124,6 @@ class UserPhotoDeleteView(APIView):
             except ImproperlyConfigured as e:
                 return Response({'message': f'Error deleting photo: {str(e)}'},
                                 status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        else:
-            return Response({'message': 'User does not have a photo'}, status=status.HTTP_404_NOT_FOUND)
-
-
-class UserPhotoRetrieveView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        user = request.user
-
-        if user.photo:
-            # Return the photo URL or other information
-            return Response({'photo_url': user.photo.url}, status=status.HTTP_200_OK)
         else:
             return Response({'message': 'User does not have a photo'}, status=status.HTTP_404_NOT_FOUND)
 

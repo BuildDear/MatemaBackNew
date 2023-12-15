@@ -2,6 +2,7 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
+
     path('task/all/', TaskView.as_view(), name='view-task'),
     path('task/search/', TaskSearchView.as_view(), name='search-task'),
     path('task/create/', TaskCreateView.as_view(), name='create-task'),
@@ -27,5 +28,4 @@ urlpatterns = [
     path('user/all/', UserListView.as_view(), name='view-user'),
 
     path('user_theme/create/', UserThemeCreateView.as_view(), name='user_theme-create'),
-
 ]

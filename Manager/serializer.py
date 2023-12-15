@@ -98,9 +98,6 @@ class TypeAnswerCreateSerializer(serializers.ModelSerializer):
 
 
 class UserThemeCreateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserTheme
-        fields = "__all__"
 
     def create(self, validated_data):
         theme = validated_data.get('theme')
@@ -113,6 +110,10 @@ class UserThemeCreateSerializer(serializers.ModelSerializer):
 
         user_theme = UserTheme.objects.create(**validated_data)
         return user_theme
+      
+    class Meta:
+        model = UserTheme
+        fields = "__all__"
 
 
 class TaskPhotoSerializer(serializers.ModelSerializer):

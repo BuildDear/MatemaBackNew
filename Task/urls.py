@@ -2,9 +2,9 @@ from django.urls import path
 from .views import *
 
 urlpatterns = [
-    path('task_list/generate/', TaskListView.as_view(), name='task-list'),
-
-    path('transfer-task/<str:username>/', TransferTaskView.as_view(), name='done-task'),
+    path('list/generate/', TaskListView.as_view(), name='task-list-generate'),
+    path('transfer/<str:username>/', TransferTaskView.as_view(), name='task-transfer'),
+    path('done/<str:username>/', UserDoneTasksView.as_view(), name='task-done'),
 ]
 
 

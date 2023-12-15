@@ -57,6 +57,7 @@ class DoneTask(models.Model):
     task = models.ForeignKey(Task, on_delete=models.CASCADE, to_field='name')
     is_done = models.BooleanField()
     datetime = models.DateTimeField(auto_now_add=True)
+    mark = models.IntegerField()
 
     class Meta:
         db_table = "DoneTask"
