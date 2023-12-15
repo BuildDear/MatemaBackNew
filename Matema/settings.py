@@ -2,7 +2,6 @@ from datetime import timedelta
 from pathlib import Path
 from decouple import config
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('DJANGO_SECRET_KEY')
@@ -120,10 +119,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-#########################################################################
-
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+# ===     AUTH CREDENTIALS     === #
 
 AUTH_USER_MODEL = 'User.User'
 
@@ -140,7 +139,9 @@ REST_FRAMEWORK = {
 }
 
 AUTHENTICATION_BACKENDS = [
+    'social_core.backends.google.GithubOAuth2',
     'social_core.backends.google.GoogleOAuth2',
+    'social_core.backends.google.GoogleOAuth',
     'django.contrib.auth.backends.ModelBackend',
     'rest_framework.authentication.TokenAuthentication',
 ]
@@ -177,6 +178,10 @@ DJOSER = {
     },
 }
 
+SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+
+# ===     EMAIL CREDENTIALS     === #
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'smtp.gmail.com'
@@ -184,8 +189,16 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'matema.group@gmail.com'
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
+# ===     GOOGLE CREDENTIALS     === #
+
 GOOGLE_OAUTH2_CLIENT_ID = config('GOOGLE_OAUTH2_CLIENT_ID')
 GOOGLE_OAUTH2_CLIENT_SECRET = config('GOOGLE_OAUTH2_CLIENT_SECRET')
 GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo'
                                                                          '.profile', 'openid']
 GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
+
+# ===     GITHUB CREDENTIALS     === #
+
+SOCIAL_AUTH_GITHUB_CLIENT_ID = config('SOCIAL_AUTH_GITHUB_CLIENT_ID')
+SOCIAL_AUTH_GITHUB_SECRET = config('SOCIAL_AUTH_GITHUB_SECRET')
+
