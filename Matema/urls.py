@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
+    path('auth/', include('djoser.social.urls')),
     path('auth/verify/<uidb64>/<token>/', views.activate_account, name='activate_account'),
     path('manager/', include('Manager.urls')),
     path('user/', include('User.urls')),

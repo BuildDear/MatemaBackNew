@@ -18,7 +18,6 @@ from rest_framework.views import APIView
 from User.models import User
 
 
-
 def activate_account(request, uidb64, token):
     """
     Activate a user account.
@@ -107,7 +106,6 @@ class UserPhotoView(APIView):
 
         # Return the serialized data directly
         return Response(serializer.data, status=status.HTTP_200_OK)
-
 
     def delete(self, request):
         user = request.user
