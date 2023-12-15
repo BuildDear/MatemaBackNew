@@ -18,6 +18,7 @@ class UserTasksView(APIView):
         return Response(serializer.data)
 
 
+
 class UserNotDoneTasksView(APIView):
     permission_classes = (AllowAny,)
 
