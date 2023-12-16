@@ -124,7 +124,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
 # ===     AUTH CREDENTIALS     === #
 
 AUTH_USER_MODEL = 'User.User'
@@ -174,11 +173,21 @@ DJOSER = {
     'TOKEN_MODEL': None,  # We use only JWT
     'ACTIVATION_URL': 'auth/verify/{uid}/{token}/',
     'SOCIAL_AUTH_TOKEN_STRATEGY': 'djoser.social.token.jwt.TokenStrategy',
-    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['https://matema-dev-ncrzmugb6q-lm.a.run.app'],
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['https://matema-dev-ncrzmugb6q-lm.a.run.app/task/all',
+                                          'http://127.0.0.1:8000/task/all/',
+                                          'http://127.0.0.1:8000/',
+                                          'http://127.0.0.1:8000'
+                                          ],
     "SERIALIZERS": {
         'user_create': 'User.serializers.CustomUserCreateSerializer',
     },
 }
+SOCIAL_AUTH_ALLOWED_REDIRECT_URIS = [
+    'https://matema-dev-ncrzmugb6q-lm.a.run.app/task/all',
+    'http://127.0.0.1:8000/task/all/',
+    'http://127.0.0.1:8000/',
+    'http://127.0.0.1:8000'
+]
 
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 
@@ -193,14 +202,16 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 # ===     GOOGLE CREDENTIALS     === #
 
-GOOGLE_OAUTH2_CLIENT_ID = config('GOOGLE_OAUTH2_CLIENT_ID')
-GOOGLE_OAUTH2_CLIENT_SECRET = config('GOOGLE_OAUTH2_CLIENT_SECRET')
-GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'
-                                                                         'openid']
+GOOGLE_OAUTH2_CLIENT_ID = (config('GOOGLE_OAUTH2_CLIENT_ID'),)
+GOOGLE_OAUTH2_CLIENT_SECRET = (config('GOOGLE_OAUTH2_CLIENT_SECRET'),)
+SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile",
+    "openid",
+]
 GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
 
 # ===     GITHUB CREDENTIALS     === #
 
 SOCIAL_AUTH_GITHUB_CLIENT_ID = config('SOCIAL_AUTH_GITHUB_CLIENT_ID')
 SOCIAL_AUTH_GITHUB_SECRET = config('SOCIAL_AUTH_GITHUB_SECRET')
-
