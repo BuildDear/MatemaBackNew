@@ -21,7 +21,7 @@ from drf_yasg.utils import swagger_auto_schema
 
 class UserTasksView(APIView):
     permission_classes = (AllowAny,)
-#
+
     def get(self, request, username, format=None):
         thirty_days_ago = timezone.now() - timedelta(days=30)
         tasks = DoneTask.objects.filter(user_id=username, is_done=True, datetime__gte=thirty_days_ago)
