@@ -56,7 +56,7 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
 class ThemeCreateSerializer(serializers.ModelSerializer):
 
     def create_theme(self, name):
-        if Theme.objects.filter(id=name).exists():
+        if Theme.objects.filter(name=name).exists():
             raise ValidationError('A theme with that name already exists.')
 
         theme = Theme.objects.create(name=name)

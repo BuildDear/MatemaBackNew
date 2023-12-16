@@ -58,7 +58,6 @@ class TransferTaskView(APIView):
 
         return Response({"message": "Task transfer successfully"}, status=status.HTTP_200_OK)
 
-
     def is_correct_answer(self, task, user_answer):
         correct_count = 0
 
@@ -79,12 +78,18 @@ class TransferTaskView(APIView):
 
         return correct_count
 
-    def type_answer(self, task, correct_count):
+    def type_answer(self, task, correct_count, user):
         if task.answer_mcq:
+            user.score += 1
+            user.save()
             return 1
         elif task.answer_short:
+            user.score += 2
+            user.save()
             return 2
         elif task.answer_matching:
+            user.score += min(correct_count, 3)
+            user.save()
             return min(correct_count, 3)
 
 
