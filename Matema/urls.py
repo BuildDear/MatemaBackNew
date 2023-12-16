@@ -30,7 +30,7 @@ urlpatterns = [
     path('user/', include('User.urls')),
     path('task/', include('Task.urls')),
     path('statistic/', include('Statistic.urls')),
-    path('', include('social_django.urls', namespace='social')),
+    path('social-auth/', include('social_django.urls', namespace='social')),
 
     # Swagger URLs
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),

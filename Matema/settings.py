@@ -10,12 +10,12 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-CSRF_TRUSTED_ORIGINS = ['https://matema-dev-ncrzmugb6q-lm.a.run.app']
+CSRF_TRUSTED_ORIGINS = [config('HOST_DEV')]
 
-CSRF_COOKIE_DOMAIN = 'matema-dev-ncrzmugb6q-lm.a.run.app'
+CSRF_COOKIE_DOMAIN = config('HOST_DEV')
 
 CORS_ORIGIN_WHITELIST = (
-    'https://matema-dev-ncrzmugb6q-lm.a.run.app',
+    config('HOST_DEV'),
 )
 
 DEBUG = True
@@ -32,8 +32,10 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+
+    'corsheaders',
     'djoser',
     'drf_yasg',
     'social_django',
@@ -74,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect'
             ],
@@ -139,9 +142,8 @@ REST_FRAMEWORK = {
 }
 
 AUTHENTICATION_BACKENDS = [
-    'social_core.backends.google.GithubOAuth2',
-    'social_core.backends.google.GoogleOAuth2',
-    'social_core.backends.google.GoogleOAuth',
+    "social_core.backends.google.GoogleOAuth2",
+    'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'rest_framework.authentication.TokenAuthentication',
 ]
@@ -193,8 +195,8 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 GOOGLE_OAUTH2_CLIENT_ID = config('GOOGLE_OAUTH2_CLIENT_ID')
 GOOGLE_OAUTH2_CLIENT_SECRET = config('GOOGLE_OAUTH2_CLIENT_SECRET')
-GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo'
-                                                                         '.profile', 'openid']
+GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'
+                                                                         'openid']
 GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
 
 # ===     GITHUB CREDENTIALS     === #
