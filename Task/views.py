@@ -4,23 +4,45 @@ from rest_framework import status
 from User.models import *
 from rest_framework.response import Response
 from Task.serializer import *
+from drf_yasg.utils import swagger_auto_schema
 
 
-class TaskListView(APIView):
+class GenerateTaskView(APIView):
     permission_classes = (AllowAny,)
 
-    def get(self, request, username):
-
+    @swagger_auto_schema(
+        request_body=TaskListSerializer,
+        responses={
+            status.HTTP_201_CREATED: TaskListSerializer(),
+            status.HTTP_400_BAD_REQUEST: 'Bad Request'
+        }
+    )
+    def post(self, request):
+        username = request.data.get('username')
         if not username:
             return Response({"error": "Username is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             tasklist = create_tasklist(username)
             serializer = TaskListSerializer(tasklist, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except User.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class TaskListView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request, username):
+        try:
+            task_lists = TaskList.objects.filter(user=username)
+            serializer = TaskListSerializer(task_lists, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except TaskList.DoesNotExist:
+            return Response({"error": "No tasks found for this user."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
