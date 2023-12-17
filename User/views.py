@@ -2,12 +2,13 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.storage import default_storage
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils.http import urlsafe_base64_decode
 
 from Task.models import Task
 from Task.serializer import TaskSerializer
 from User.serializers import UserPhotoSerializer, UserScoreSerializer
+from django.views.decorators.http import require_http_methods
 
 from rest_framework.response import Response
 from rest_framework import status
@@ -57,15 +58,16 @@ def activate_account(request, uidb64, token):
         return HttpResponse('Activation link is invalid!')
 
 
-def check_user_active(username):
+@require_http_methods(["GET"])
+def check_user_active(request, username):
     try:
         user = User.objects.get(username=username)
         if user.is_active:
-            return HttpResponse(status=200)
+            return JsonResponse({'status': 'active'}, status=200)
         else:
-            return HttpResponse(status=401)
+            return JsonResponse({'status': 'inactive'}, status=403)
     except User.DoesNotExist:
-        return HttpResponse("User does not exist", status=404)
+        return JsonResponse({'error': 'User does not exist'}, status=404)
 
 
 class UserPhotoView(APIView):
