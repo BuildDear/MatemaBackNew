@@ -174,20 +174,13 @@ DJOSER = {
     'ACTIVATION_URL': 'auth/verify/{uid}/{token}/',
     'SOCIAL_AUTH_TOKEN_STRATEGY': 'djoser.social.token.jwt.TokenStrategy',
     'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['https://matema-dev-ncrzmugb6q-lm.a.run.app/task/all',
-                                          'http://127.0.0.1:8000/task/all/',
-                                          'http://127.0.0.1:8000/',
-                                          'http://127.0.0.1:8000'
+                                          'http://127.0.0.1:8000/manager/task/all/',
                                           ],
     "SERIALIZERS": {
         'user_create': 'User.serializers.CustomUserCreateSerializer',
     },
 }
-SOCIAL_AUTH_ALLOWED_REDIRECT_URIS = [
-    'https://matema-dev-ncrzmugb6q-lm.a.run.app/task/all',
-    'http://127.0.0.1:8000/task/all/',
-    'http://127.0.0.1:8000/',
-    'http://127.0.0.1:8000'
-]
+
 
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 
@@ -202,13 +195,12 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 # ===     GOOGLE CREDENTIALS     === #
 
-GOOGLE_OAUTH2_CLIENT_ID = (config('GOOGLE_OAUTH2_CLIENT_ID'),)
-GOOGLE_OAUTH2_CLIENT_SECRET = (config('GOOGLE_OAUTH2_CLIENT_SECRET'),)
-SOCIAL_AUTH_GOOGLE_OAUTH2_SCOPE = [
-    "https://www.googleapis.com/auth/userinfo.email",
-    "https://www.googleapis.com/auth/userinfo.profile",
-    "openid",
-]
+# GOOGLE_OAUTH2_CLIENT_ID = config('GOOGLE_OAUTH2_CLIENT_ID')
+# GOOGLE_OAUTH2_CLIENT_SECRET = config('GOOGLE_OAUTH2_CLIENT_SECRET')
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '326998347822-7t3aphjrvjqaskopfe6r32c9ldh2vjm7.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = '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'
+
 GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
 
 # ===     GITHUB CREDENTIALS     === #
