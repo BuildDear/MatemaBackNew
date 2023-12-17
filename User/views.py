@@ -57,7 +57,7 @@ def activate_account(request, uidb64, token):
         return HttpResponse('Activation link is invalid!')
 
 
-def check_user_active(username):
+def check_user_active(request, username):
     try:
         user = User.objects.get(username=username)
         if user.is_active:
