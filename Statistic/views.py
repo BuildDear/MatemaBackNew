@@ -1,6 +1,4 @@
-from MatemaBackNew.Manager.serializer import ThemeCreateSerializer, ThemeSerializer
 from django.db.models import Count
-from rest_framework import status
 from rest_framework.permissions import AllowAny
 from django.utils import timezone
 from datetime import timedelta
@@ -9,15 +7,6 @@ from rest_framework.response import Response
 from Task.models import DoneTask, TaskList
 from Task.serializer import TaskListSerializer
 
-from drf_yasg.utils import swagger_auto_schema
-@swagger_auto_schema(
-        request_body=ThemeCreateSerializer,
-        responses={
-            status.HTTP_201_CREATED: ThemeSerializer(),
-            status.HTTP_400_BAD_REQUEST: 'Bad Request',
-            status.HTTP_404_NOT_FOUND: 'Theme not found'
-        }
-    )
 
 class UserTasksView(APIView):
     permission_classes = (AllowAny,)
