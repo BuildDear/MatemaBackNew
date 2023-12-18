@@ -48,6 +48,22 @@ class TaskListView(APIView):
 
 
 class TransferTaskView(APIView):
+    """
+       post:
+       Submit an answer for a task.
+
+       Path Parameter:
+       - username: String
+
+       Body (JSON):
+       - name: String
+       - user_answer: String
+
+       Responses:
+       - 200: Task transfer successful
+       - 400: Incorrect answer
+       - 404: Task or User not found
+       """
     permission_classes = (AllowAny,)
 
     def post(self, request, username):
