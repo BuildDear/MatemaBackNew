@@ -69,7 +69,7 @@ class TransferTaskView(APIView):
         if not self.is_correct_answer(task, user_answer):
             return Response({'message': 'Incorrect answer'}, status=status.HTTP_400_BAD_REQUEST)
 
-        mark = self.type_answer(task, correct_count)
+        mark = self.type_answer(task, correct_count, user)
 
         DoneTask.objects.create(
             user=user,

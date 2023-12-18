@@ -98,22 +98,28 @@ class TypeAnswerCreateSerializer(serializers.ModelSerializer):
 
 
 class UserThemeCreateSerializer(serializers.ModelSerializer):
-
-    def create(self, validated_data):
-        theme = validated_data.get('theme')
-        if not isinstance(theme, Theme):
-            raise serializers.ValidationError('Invalid theme instance.')
-
-        user = validated_data.get('user')
-        if not isinstance(user, User):
-            raise serializers.ValidationError('Invalid user instance.')
-
-        user_theme = UserTheme.objects.create(**validated_data)
-        return user_theme
-      
     class Meta:
         model = UserTheme
-        fields = "__all__"
+        fields = ['user', 'theme']
+
+    def create(self, validated_data):
+        user_data = validated_data.get('user')
+        themes_data = validated_data.get('theme')
+        print(themes_data)
+        try:
+            user = User.objects.get(username=user_data)
+        except User.DoesNotExist:
+            raise serializers.ValidationError({'user': 'User does not exist.'})
+
+        user_themes = []
+        for theme_name in themes_data:
+            theme = Theme.objects.get(name=theme_name)
+            if not isinstance(theme, Theme):
+                raise serializers.ValidationError('Invalid theme instance.')
+            user_theme = UserTheme.objects.create(user=user, theme=theme)
+            user_themes.append(user_theme)
+
+        return user_themes
 
 
 class TaskPhotoSerializer(serializers.ModelSerializer):

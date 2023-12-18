@@ -313,8 +313,8 @@ class UserThemeCreateView(APIView):
     def post(self, request):
         serializer = UserThemeCreateSerializer(data=request.data)
         if serializer.is_valid():
-            user_theme = serializer.save()
-            return Response(UserThemeCreateSerializer(user_theme).data, status=status.HTTP_201_CREATED)
+            user_themes = serializer.save()
+            return Response(UserThemeCreateSerializer(user_themes, many=True).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
