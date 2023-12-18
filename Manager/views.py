@@ -309,12 +309,33 @@ class TypeAnswerEditView(APIView):
 
 class UserThemeCreateView(APIView):
     permission_classes = (AllowAny,)
-    def post(self, request, *args, **kwargs):
-        serializer = UserThemeCreateSerializer(data=request.data)
-        if serializer.is_valid():
-            user_themes = serializer.save()
-            return Response(UserThemeCreateSerializer(user_themes, many=True).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def post(self, request):
+        # Отримання даних користувача з запиту
+        user_data = request.data.get('user')
+        themes_data = request.data.get('theme')
+
+        # Спроба знайти користувача в базі даних
+        try:
+            user = User.objects.get(username=user_data)
+        except User.DoesNotExist:
+            return Response({'user': 'Користувач не існує.'}, status=status.HTTP_404_NOT_FOUND)
+
+        user_themes_created = []
+        for theme_name in themes_data:
+            # Спроба знайти тему в базі даних
+            try:
+                theme = Theme.objects.get(name=theme_name)
+            except Theme.DoesNotExist:
+                return Response({'theme': f'Тема з іменем {theme_name} не існує.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Створення нового об'єкта UserTheme
+            user_theme = UserTheme.objects.create(user=user, theme=theme)
+            user_themes_created.append(user_theme)
+
+        # Серіалізація і повернення створених об'єктів
+        serializer = UserThemeCreateSerializer(user_themes_created, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class UserListView(ListAPIView):

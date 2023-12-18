@@ -97,36 +97,25 @@ class TypeAnswerCreateSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class UserThemeCreateSerializer(serializers.ModelSerializer):
-    theme = serializers.ListField(
-        child=serializers.CharField(),
-        write_only=True
-    )
-
-    class Meta:
-        model = UserTheme
-        fields = ['user', 'theme']
+class UserThemeCreateSerializer(serializers.Serializer):
 
     def create(self, validated_data):
         user_data = validated_data.get('user')
-        themes_data = validated_data.get('theme')
+        theme_data = validated_data.get('theme')
 
         try:
             user = User.objects.get(username=user_data)
         except User.DoesNotExist:
             raise serializers.ValidationError({'user': 'Користувач не існує.'})
 
-        user_themes = []
-        for theme_name in themes_data:
-            try:
-                theme = Theme.objects.get(name=theme_name)
-            except Theme.DoesNotExist:
-                raise serializers.ValidationError({'theme': f'Тема з іменем {theme_name} не існує.'})
+        try:
+            theme = Theme.objects.get(name=theme_data)
+        except Theme.DoesNotExist:
+            raise serializers.ValidationError({'theme': f'Тема з іменем {theme_data} не існує.'})
 
-            user_theme = UserTheme.objects.create(user=user, theme=theme)
-            user_themes.append(user_theme)
+        user_theme = UserTheme.objects.create(user=user, theme=theme)
 
-        return user_themes
+        return user_theme
 
     class Meta:
         model = UserTheme
