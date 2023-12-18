@@ -71,7 +71,7 @@ class TaskForListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['name', 'point', 'theme']
+        fields = ['id', 'name', 'point', 'theme']
 
 
 class TaskListSerializer(serializers.ModelSerializer):
