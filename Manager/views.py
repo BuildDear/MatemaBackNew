@@ -309,8 +309,7 @@ class TypeAnswerEditView(APIView):
 
 class UserThemeCreateView(APIView):
     permission_classes = (AllowAny,)
-
-    def post(self, request):
+    def post(self, request, *args, **kwargs):
         serializer = UserThemeCreateSerializer(data=request.data)
         if serializer.is_valid():
             user_themes = serializer.save()

@@ -85,7 +85,7 @@ class TaskListSerializer(serializers.ModelSerializer):
 class DoneTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = DoneTask
-        fields = ['user', 'task', 'is_done', 'datetime']
+        fields = ['user', 'task', 'is_done', 'datetime', 'mark']
 
 
 class TypeAnswerSerializer(serializers.ModelSerializer):
