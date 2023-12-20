@@ -56,7 +56,7 @@ class TaskUpdateSerializer(serializers.ModelSerializer):
 class ThemeCreateSerializer(serializers.ModelSerializer):
 
     def create_theme(self, name):
-        if Theme.objects.filter(id=name).exists():
+        if Theme.objects.filter(name=name).exists():
             raise ValidationError('A theme with that name already exists.')
 
         theme = Theme.objects.create(name=name)
@@ -97,23 +97,29 @@ class TypeAnswerCreateSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
-class UserThemeCreateSerializer(serializers.ModelSerializer):
+class UserThemeCreateSerializer(serializers.Serializer):
 
     def create(self, validated_data):
-        theme = validated_data.get('theme')
-        if not isinstance(theme, Theme):
-            raise serializers.ValidationError('Invalid theme instance.')
+        user_data = validated_data.get('user')
+        theme_data = validated_data.get('theme')
 
-        user = validated_data.get('user')
-        if not isinstance(user, User):
-            raise serializers.ValidationError('Invalid user instance.')
+        try:
+            user = User.objects.get(username=user_data)
+        except User.DoesNotExist:
+            raise serializers.ValidationError({'user': 'Користувач не існує.'})
 
-        user_theme = UserTheme.objects.create(**validated_data)
+        try:
+            theme = Theme.objects.get(name=theme_data)
+        except Theme.DoesNotExist:
+            raise serializers.ValidationError({'theme': f'Тема з іменем {theme_data} не існує.'})
+
+        user_theme = UserTheme.objects.create(user=user, theme=theme)
+
         return user_theme
-      
+
     class Meta:
         model = UserTheme
-        fields = "__all__"
+        fields = ['user', 'theme']
 
 
 class TaskPhotoSerializer(serializers.ModelSerializer):

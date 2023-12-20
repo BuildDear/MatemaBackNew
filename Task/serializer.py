@@ -1,46 +1,49 @@
 from Task.models import *
-from django.contrib.auth import get_user_model
-from rest_framework import serializers
 import random
 
-from random import sample
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
-
 
 User = get_user_model()
 
 
 def select_user_tasks(username):
-    user_themes = list(UserTheme.objects.filter(user_id=username).values_list('theme_id', flat=True))
-    
-    random.shuffle(user_themes)  # Перемішування списку тем
+    user_themes = list(UserTheme.objects.filter(user_id=username).values_list('theme', flat=True))
 
-    print(user_themes)
-    random.shuffle(user_themes)  # Перемішування списку тем
     tasks_to_assign = []
     used_themes = set()  # Для зберігання тем, з яких вже вибрано завдання
 
     tasks_by_points = {1: 2, 2: 2, 3: 1}
     total_required_tasks = sum(tasks_by_points.values())  # Загальна кількість необхідних завдань
 
+    # Перша спроба вибрати завдання з унікальних тем
     for point, count in tasks_by_points.items():
         for _ in range(count):
             for theme_id in user_themes:
                 if theme_id not in used_themes:
-                    tasks = Task.objects.filter(theme_id=theme_id, point=point).order_by('point')
+                    tasks = Task.objects.filter(theme=theme_id, point=point).order_by('point')
                     if tasks:
                         task = random.choice(list(tasks))
                         tasks_to_assign.append(task)
                         used_themes.add(theme_id)
                         break
 
-            if len(used_themes) == len(user_themes):
-                break
-
+    # Якщо не вистачає завдань, повторно перебираємо теми
     if len(tasks_to_assign) < total_required_tasks:
-        print("Not enough tasks to generate TaskList.")
-    user_themes = UserTheme.objects.filter(user_id=username).values_list('theme_id', flat=True)
+        additional_themes = user_themes * ((total_required_tasks - len(tasks_to_assign)) // len(user_themes) + 1)
+        for point, count in tasks_by_points.items():
+            for _ in range(count - len([task for task in tasks_to_assign if task.point == point])):
+                for theme_id in additional_themes:
+                    if theme_id not in used_themes or len(used_themes) == len(user_themes):
+                        tasks = Task.objects.filter(theme=theme_id, point=point).exclude(id__in=[task.id for task in tasks_to_assign]).order_by('point')
+                        if tasks:
+                            task = random.choice(list(tasks))
+                            tasks_to_assign.append(task)
+                            used_themes.add(theme_id)
+                            break
+
+                if len(tasks_to_assign) >= total_required_tasks:
+                    break
 
     task_names = [task.name for task in tasks_to_assign]
     return task_names
@@ -63,21 +66,26 @@ def create_tasklist(username):
     return tasklists
 
 
-class TaskListSerializer(serializers.ModelSerializer):
-    theme_name = serializers.CharField(source='task.theme.name', read_only=True)
+class TaskForListSerializer(serializers.ModelSerializer):
+    theme = serializers.CharField(source='theme.name')
+
     class Meta:
-        model = DoneTask
-        fields = ['id', 'datetime', 'task_id', 'user_id', 'theme_name']
+        model = Task
+        fields = ['id', 'name', 'point', 'theme']
+
+
+class TaskListSerializer(serializers.ModelSerializer):
+    task = TaskForListSerializer(read_only=True)
 
     class Meta:
         model = TaskList
-        fields = "__all__"
+        fields = ['task', 'is_weekly']
         
 
 class DoneTaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = DoneTask
-        fields = ['user', 'task', 'is_done', 'datetime']
+        fields = ['user', 'task', 'is_done', 'datetime', 'mark']
 
 
 class TypeAnswerSerializer(serializers.ModelSerializer):
@@ -91,7 +99,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['id', 'name', 'text', 'point', 'photo', 'answer_matching', 'answer_short', 'answer_mcq', 'theme', 'type_ans']
+        fields = "__all__"
 
         
 class UserThemeCreateSerializer(serializers.ModelSerializer):

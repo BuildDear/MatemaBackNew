@@ -7,11 +7,13 @@ from rest_framework import status
 from .serializer import *
 from rest_framework.response import Response
 from Task.serializer import *
+from drf_yasg.utils import swagger_auto_schema
+from drf_yasg import openapi
 
 
 class TaskView(APIView):
-    # Allow requests from any users, authenticated or not
     permission_classes = (AllowAny,)
+    # permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         # Retrieve all tasks from the database
@@ -23,9 +25,17 @@ class TaskView(APIView):
 class TaskSearchView(APIView):
     permission_classes = (AllowAny,)
 
+    @swagger_auto_schema(
+        manual_parameters=[
+            openapi.Parameter('theme', openapi.IN_QUERY, description="Theme ID", type=openapi.TYPE_STRING),
+            openapi.Parameter('point', openapi.IN_QUERY, description="Point value", type=openapi.TYPE_INTEGER)
+        ],
+        responses={status.HTTP_200_OK: TaskSerializer(many=True)}
+    )
+
     def get(self, request):
         # Extract parameters from the request
-        theme_name = request.query_params.get('theme_id')
+        theme_name = request.query_params.get('theme')
         point = request.query_params.get('point')
 
         # Filter tasks based on provided query parameters
@@ -43,66 +53,71 @@ class TaskSearchView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
 class TaskCreateView(APIView):
     permission_classes = (AllowAny,)
 
+    @swagger_auto_schema(
+        request_body=TaskCreateSerializer,
+        responses={
+            status.HTTP_201_CREATED: ThemeCreateSerializer(),
+            status.HTTP_400_BAD_REQUEST: 'Bad Request'
+        }
+    )
     def post(self, request, *args, **kwargs):
         serializer = TaskCreateSerializer(data=request.data)
 
-        if serializer.is_valid():
-            task = serializer.save()
-            
-            # Check if answer data is present
-            if 'answer_data' in request.data:
-                answer_data = request.data['answer_data']
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-                # Check if type_ans is present
-                if 'type_ans' not in request.data:
-                    # Return an error if type_ans is not specified when adding an answer
-                    task.delete()  # Rollback the task creation
-                    return Response({'message': 'Type_ans must be specified when adding an answer'},
-                                    status=status.HTTP_400_BAD_REQUEST)
+        task = serializer.save()
 
-                try:
-                    # Try to get the TypeAnswer instance based on the provided ID
-                    type_ans_instance = TypeAnswer.objects.get(id=request.data['type_ans'])
-                except TypeAnswer.DoesNotExist:
-                    # Return an error if the specified type_ans ID is not found
-                    task.delete()  # Rollback the task creation
-                    return Response({'message': 'Invalid type_ans ID'},
-                                    status=status.HTTP_400_BAD_REQUEST)
+        # Обробка додаткових даних для завдання
+        answer_data = request.data.get('answer_data')
+        if answer_data:
+            type_ans_id = request.data.get('type_ans')
+            if not type_ans_id:
+                task.delete()
+                return Response({'message': 'Type_ans must be specified when adding an answer'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
-                answer_type = None
-                if 'options' in answer_data and 'correct_answer' in answer_data:
-                    answer_type = 'mcq'
-                elif 'pairs' in answer_data:
-                    answer_type = 'matching'
-                elif 'correct_answer' in answer_data:
-                    answer_type = 'short'
+            try:
+                type_ans_instance = TypeAnswer.objects.get(id=type_ans_id)
+            except TypeAnswer.DoesNotExist:
+                task.delete()
+                return Response({'message': 'Invalid type_ans ID'},
+                                status=status.HTTP_400_BAD_REQUEST)
 
-                # Set the new answer based on the determined answer_type
-                if answer_type == 'mcq':
-                    task.answer_matching = None
-                    task.answer_short = None
-                    task.answer_mcq = answer_data
-                elif answer_type == 'matching':
-                    task.answer_mcq = None
-                    task.answer_short = None
-                    task.answer_matching = answer_data
-                elif answer_type == 'short':
-                    task.answer_mcq = None
-                    task.answer_matching = None
-                    task.answer_short = answer_data
+            # Встановлення відповідного типу відповіді
+            answer_type = self.determine_answer_type(answer_data)
+            task = self.set_task_answer(task, answer_type, answer_data)
+            task.type_ans = type_ans_instance
+            task.save()
 
+        return Response(TaskCreateSerializer(task).data, status=status.HTTP_201_CREATED)
 
-                task.type_ans = type_ans_instance
-                task.save()
+    def determine_answer_type(self, answer_data):
+        if 'options' in answer_data and 'correct_answer' in answer_data:
+            return 'mcq'
+        elif 'pairs' in answer_data:
+            return 'matching'
+        elif 'correct_answer' in answer_data:
+            return 'short'
+        return None
 
-            return Response(TaskCreateSerializer(task).data, status=status.HTTP_201_CREATED)
-
-        # Return serializer errors if data validation fails
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def set_task_answer(self, task, answer_type, answer_data):
+        if answer_type == 'mcq':
+            task.answer_matching = None
+            task.answer_short = None
+            task.answer_mcq = answer_data
+        elif answer_type == 'matching':
+            task.answer_mcq = None
+            task.answer_short = None
+            task.answer_matching = answer_data
+        elif answer_type == 'short':
+            task.answer_mcq = None
+            task.answer_matching = None
+            task.answer_short = answer_data
+        return task
 
 
 class TaskDeleteView(APIView):
@@ -124,6 +139,14 @@ class TaskDeleteView(APIView):
 class TaskEditView(APIView):
     permission_classes = (AllowAny,)
 
+    @swagger_auto_schema(
+        request_body=TaskUpdateSerializer,
+        responses={
+            status.HTTP_201_CREATED: TaskUpdateSerializer(),
+            status.HTTP_400_BAD_REQUEST: 'Bad Request',
+            status.HTTP_404_NOT_FOUND: 'Task not found'
+        }
+    )
     def put(self, request, name):
         try:
             task = Task.objects.get(name=name)
@@ -161,6 +184,13 @@ class ThemeView(APIView):
 class ThemeCreateView(APIView):
     permission_classes = (AllowAny,)
 
+    @swagger_auto_schema(
+        request_body=ThemeCreateSerializer,
+        responses={
+            status.HTTP_201_CREATED: ThemeCreateSerializer(),
+            status.HTTP_400_BAD_REQUEST: 'Bad Request'
+        }
+    )
     def post(self, request):
         serializer = ThemeCreateSerializer(data=request.data)
         if serializer.is_valid():
@@ -188,6 +218,14 @@ class ThemeDeleteView(APIView):
 class ThemeEditView(APIView):
     permission_classes = (AllowAny,)
 
+    @swagger_auto_schema(
+        request_body=ThemeSerializer,
+        responses={
+            status.HTTP_201_CREATED: ThemeSerializer(),
+            status.HTTP_400_BAD_REQUEST: 'Bad Request',
+            status.HTTP_404_NOT_FOUND: 'Theme not found'
+        }
+    )
     def put(self, request, name):
         try:
             theme = Theme.objects.get(name=name)
@@ -212,6 +250,14 @@ class TypeAnswerView(APIView):
 
 class TypeAnswerCreateView(APIView):
     permission_classes = (AllowAny,)
+
+    @swagger_auto_schema(
+        request_body=TypeAnswerCreateSerializer,
+        responses={
+            status.HTTP_201_CREATED: TypeAnswerCreateSerializer(),
+            status.HTTP_400_BAD_REQUEST: 'Bad Request'
+        }
+    )
 
     def post(self, request):
         serializer = TypeAnswerCreateSerializer(data=request.data)
@@ -240,6 +286,14 @@ class TypeAnswerDeleteView(APIView):
 class TypeAnswerEditView(APIView):
     permission_classes = (AllowAny,)
 
+    @swagger_auto_schema(
+        request_body=TypeAnswerSerializer,
+        responses={
+            status.HTTP_201_CREATED: TypeAnswerSerializer(),
+            status.HTTP_400_BAD_REQUEST: 'Bad Request',
+            status.HTTP_404_NOT_FOUND: 'Type answer not found'
+        }
+    )
     def put(self, request, pk):
         try:
             type_ans = TypeAnswer.objects.get(pk=pk)
@@ -257,11 +311,31 @@ class UserThemeCreateView(APIView):
     permission_classes = (AllowAny,)
 
     def post(self, request):
-        serializer = UserThemeCreateSerializer(data=request.data)
-        if serializer.is_valid():
-            user_theme = serializer.save()
-            return Response(UserThemeCreateSerializer(user_theme).data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Отримання даних користувача з запиту
+        user_data = request.data.get('user')
+        themes_data = request.data.get('theme')
+
+        # Спроба знайти користувача в базі даних
+        try:
+            user = User.objects.get(username=user_data)
+        except User.DoesNotExist:
+            return Response({'user': 'Користувач не існує.'}, status=status.HTTP_404_NOT_FOUND)
+
+        user_themes_created = []
+        for theme_name in themes_data:
+            # Спроба знайти тему в базі даних
+            try:
+                theme = Theme.objects.get(name=theme_name)
+            except Theme.DoesNotExist:
+                return Response({'theme': f'Тема з іменем {theme_name} не існує.'}, status=status.HTTP_404_NOT_FOUND)
+
+            # Створення нового об'єкта UserTheme
+            user_theme = UserTheme.objects.create(user=user, theme=theme)
+            user_themes_created.append(user_theme)
+
+        # Серіалізація і повернення створених об'єктів
+        serializer = UserThemeCreateSerializer(user_themes_created, many=True)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
 class UserListView(ListAPIView):

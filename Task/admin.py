@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import TypeAnswer, Theme, Task, TaskList, UserTheme
+from .models import TypeAnswer, Theme, Task, TaskList, UserTheme, DoneTask
 
 
 @admin.register(TypeAnswer)
@@ -32,5 +32,14 @@ class TaskListAdmin(admin.ModelAdmin):
 class UserThemeAdmin(admin.ModelAdmin):
     list_display = ('user', 'theme')
     search_fields = ('user__username', 'them__name')
+
+
+@admin.register(DoneTask)
+class DoneTaskAdmin(admin.ModelAdmin):
+    list_display = ('user', 'task', 'is_done', 'datetime', 'mark')
+    list_filter = ('is_done', 'datetime')
+    search_fields = ('user__username', 'task__name')
+    date_hierarchy = 'datetime'
+    ordering = ('-datetime',)
 
 

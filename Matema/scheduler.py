@@ -9,8 +9,9 @@ scheduler = BackgroundScheduler()
 # Adding a job store for DjangoJobStore jobs and assigning it the name "default"
 scheduler.add_jobstore(DjangoJobStore(), "default")
 
+
 # Decorator for registering a job that will be executed daily at the specified hour
-@register_job(scheduler, "cron", hour='0', minute='1', replace_existing=True)# Change only the time here
+@register_job(scheduler, "cron", hour='0', minute='1', replace_existing=True)  # Change only the time here
 def change_task_list():
     today = datetime.today()
 

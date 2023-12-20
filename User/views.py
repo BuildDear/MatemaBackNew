@@ -2,21 +2,21 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.storage import default_storage
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.utils.http import urlsafe_base64_decode
 
 from Task.models import Task
 from Task.serializer import TaskSerializer
 from User.serializers import UserPhotoSerializer, UserScoreSerializer
+from django.views.decorators.http import require_http_methods
 
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 
 from User.models import User
-
 
 
 def activate_account(request, uidb64, token):
@@ -58,20 +58,30 @@ def activate_account(request, uidb64, token):
         return HttpResponse('Activation link is invalid!')
 
 
+@require_http_methods(["GET"])
 def check_user_active(request, username):
     try:
         user = User.objects.get(username=username)
         if user.is_active:
-            return HttpResponse(status=200)
+            return JsonResponse({'status': 'active'}, status=200)
         else:
-            return HttpResponse(status=401)
+            return JsonResponse({'status': 'inactive'}, status=403)
     except User.DoesNotExist:
-        return HttpResponse("User does not exist", status=404)
+        return JsonResponse({'error': 'User does not exist'}, status=404)
 
 
-class UserPhotoCreateView(APIView):
+class UserPhotoView(APIView):
     permission_classes = (IsAuthenticated,)
     parser_classes = (MultiPartParser, FormParser)
+
+    def get(self, request):
+        user = request.user
+
+        if user.photo:
+            # Return the photo URL or other information
+            return Response({'photo_url': user.photo.url}, status=status.HTTP_200_OK)
+        else:
+            return Response({'message': 'User does not have a photo'}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request, *args, **kwargs):
         user = request.user
@@ -99,10 +109,6 @@ class UserPhotoCreateView(APIView):
         # Return the serialized data directly
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
-class UserPhotoDeleteView(APIView):
-    permission_classes = (IsAuthenticated,)
-
     def delete(self, request):
         user = request.user
 
@@ -124,19 +130,6 @@ class UserPhotoDeleteView(APIView):
             return Response({'message': 'User does not have a photo'}, status=status.HTTP_404_NOT_FOUND)
 
 
-class UserPhotoRetrieveView(APIView):
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        user = request.user
-
-        if user.photo:
-            # Return the photo URL or other information
-            return Response({'photo_url': user.photo.url}, status=status.HTTP_200_OK)
-        else:
-            return Response({'message': 'User does not have a photo'}, status=status.HTTP_404_NOT_FOUND)
-
-
 class UserScoreView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -148,7 +141,7 @@ class UserScoreView(APIView):
 
 
 class UserGetTaskView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request, task_id, *args, **kwargs):
         try:

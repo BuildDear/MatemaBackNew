@@ -4,33 +4,66 @@ from rest_framework import status
 from User.models import *
 from rest_framework.response import Response
 from Task.serializer import *
+from drf_yasg.utils import swagger_auto_schema
 
 
-class TaskListView(APIView):
+class GenerateTaskView(APIView):
     permission_classes = (AllowAny,)
 
+    @swagger_auto_schema(
+        request_body=TaskListSerializer,
+        responses={
+            status.HTTP_201_CREATED: TaskListSerializer(),
+            status.HTTP_400_BAD_REQUEST: 'Bad Request'
+        }
+    )
     def post(self, request):
         username = request.data.get('username')
-        # Перевірка, чи вказано username
         if not username:
             return Response({"error": "Username is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # Створення списку завдань для користувача
             tasklist = create_tasklist(username)
-
-            # Серіалізація даних списку завдань
             serializer = TaskListSerializer(tasklist, many=True)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         except User.DoesNotExist:
             return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            # Для відловлення інших можливих помилок
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class TaskListView(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request, username):
+        try:
+            task_lists = TaskList.objects.filter(user=username)
+            serializer = TaskListSerializer(task_lists, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except TaskList.DoesNotExist:
+            return Response({"error": "No tasks found for this user."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 class TransferTaskView(APIView):
+    """
+       post:
+       Submit an answer for a task.
+
+       Path Parameter:
+       - username: String
+
+       Body (JSON):
+       - name: String
+       - user_answer: String
+
+       Responses:
+       - 200: Task transfer successful
+       - 400: Incorrect answer
+       - 404: Task or User not found
+       """
     permission_classes = (AllowAny,)
 
     def post(self, request, username):
@@ -47,13 +80,12 @@ class TransferTaskView(APIView):
             return Response({'message': 'Task and user combination not found in TaskList'},
                             status=status.HTTP_404_NOT_FOUND)
 
-
         correct_count = self.is_correct_answer(task, user_answer)
-        
+
         if not self.is_correct_answer(task, user_answer):
             return Response({'message': 'Incorrect answer'}, status=status.HTTP_400_BAD_REQUEST)
 
-        mark = self.type_answer(task, correct_count)
+        mark = self.type_answer(task, correct_count, user)
 
         DoneTask.objects.create(
             user=user,
@@ -61,15 +93,6 @@ class TransferTaskView(APIView):
             is_done=True,
             mark=mark
         )
-        
-        return Response({"message": "Task transfer successfully"}, status=status.HTTP_200_OK)
-
-    def is_correct_answer(self, task, user_answer_data):
-        # Перевірка типу відповіді і порівняння з відповідями в базі даних
-        if (task.answer_mcq or task.answer_short) and 'correct_answer' in user_answer_data:
-            return True
-        return False
-
 
         return Response({"message": "Task transfer successfully"}, status=status.HTTP_200_OK)
 
@@ -93,12 +116,18 @@ class TransferTaskView(APIView):
 
         return correct_count
 
-    def type_answer(self, task, correct_count):
+    def type_answer(self, task, correct_count, user):
         if task.answer_mcq:
+            user.score += 1
+            user.save()
             return 1
         elif task.answer_short:
+            user.score += 2
+            user.save()
             return 2
         elif task.answer_matching:
+            user.score += min(correct_count, 3)
+            user.save()
             return min(correct_count, 3)
 
 
@@ -110,4 +139,3 @@ class UserDoneTasksView(APIView):
         done_tasks = DoneTask.objects.filter(user=user)
         serializer = DoneTaskSerializer(done_tasks, many=True)
         return Response(serializer.data)
-
