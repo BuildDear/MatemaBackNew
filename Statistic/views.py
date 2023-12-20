@@ -18,7 +18,6 @@ class UserTasksView(APIView):
         return Response(serializer.data)
 
 
-
 class UserNotDoneTasksView(APIView):
     permission_classes = (AllowAny,)
 
@@ -30,6 +29,7 @@ class UserNotDoneTasksView(APIView):
 
         serializer = TaskListSerializer(not_done_tasks, many=True)
         return Response(serializer.data)
+
 
 class UserTaskWeekView(APIView):
     permission_classes = (AllowAny,)

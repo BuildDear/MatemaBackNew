@@ -2,7 +2,6 @@ from datetime import timedelta
 from pathlib import Path
 from decouple import config
 
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = config('DJANGO_SECRET_KEY')
@@ -11,12 +10,12 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-CSRF_TRUSTED_ORIGINS = ['https://matema-dev-ncrzmugb6q-lm.a.run.app']
+CSRF_TRUSTED_ORIGINS = [config('HOST_DEV')]
 
-CSRF_COOKIE_DOMAIN = 'matema-dev-ncrzmugb6q-lm.a.run.app'
+CSRF_COOKIE_DOMAIN = config('HOST_DEV')
 
 CORS_ORIGIN_WHITELIST = (
-    'https://matema-dev-ncrzmugb6q-lm.a.run.app',
+    config('HOST_DEV'),
 )
 
 DEBUG = True
@@ -33,8 +32,10 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework.authtoken',
-    'corsheaders',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+
+    'corsheaders',
     'djoser',
     'drf_yasg',
     'social_django',
@@ -75,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
                 'social_django.context_processors.backends',
                 'social_django.context_processors.login_redirect'
             ],
@@ -120,10 +122,9 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-#########################################################################
-
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ===     AUTH CREDENTIALS     === #
 
 AUTH_USER_MODEL = 'User.User'
 
@@ -140,7 +141,8 @@ REST_FRAMEWORK = {
 }
 
 AUTHENTICATION_BACKENDS = [
-    'social_core.backends.google.GoogleOAuth2',
+    "social_core.backends.google.GoogleOAuth2",
+    'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'rest_framework.authentication.TokenAuthentication',
 ]
@@ -171,11 +173,17 @@ DJOSER = {
     'TOKEN_MODEL': None,  # We use only JWT
     'ACTIVATION_URL': 'auth/verify/{uid}/{token}/',
     'SOCIAL_AUTH_TOKEN_STRATEGY': 'djoser.social.token.jwt.TokenStrategy',
-    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': ['https://matema-dev-ncrzmugb6q-lm.a.run.app'],
+    'SOCIAL_AUTH_ALLOWED_REDIRECT_URIS': [config('SUCCESS_HOST_DEV'),
+                                          'http://127.0.0.1:8000/manager/task/all/',
+                                          ],
     "SERIALIZERS": {
         'user_create': 'User.serializers.CustomUserCreateSerializer',
     },
 }
+
+SOCIAL_AUTH_POSTGRES_JSONFIELD = True
+
+# ===     EMAIL CREDENTIALS     === #
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
@@ -184,8 +192,14 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'matema.group@gmail.com'
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
+# ===     GOOGLE CREDENTIALS     === #
+
 GOOGLE_OAUTH2_CLIENT_ID = config('GOOGLE_OAUTH2_CLIENT_ID')
 GOOGLE_OAUTH2_CLIENT_SECRET = config('GOOGLE_OAUTH2_CLIENT_SECRET')
-GOOGLE_OAUTH2_SCOPE = ['https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo'
-                                                                         '.profile', 'openid']
 GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
+
+
+# ===     GITHUB CREDENTIALS     === #
+
+SOCIAL_AUTH_GITHUB_CLIENT_ID = config('SOCIAL_AUTH_GITHUB_CLIENT_ID')
+SOCIAL_AUTH_GITHUB_SECRET = config('SOCIAL_AUTH_GITHUB_SECRET')
