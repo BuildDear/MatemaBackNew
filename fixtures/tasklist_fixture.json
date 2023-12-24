@@ -1,0 +1,38 @@
+[
+  {
+    "model": "Task.tasklist",
+    "pk": 1,
+    "fields": {
+      "user": "test_ivanka",
+      "task": "Задачка на логіку",
+      "is_weekly": false
+    }
+  },
+  {
+    "model": "Task.tasklist",
+    "pk": 2,
+    "fields": {
+      "user": "test_ivanka",
+      "task": "Кіко сторін?",
+      "is_weekly": false
+    }
+  },
+  {
+    "model": "Task.tasklist",
+    "pk": 3,
+    "fields": {
+      "user": "test_ivanka",
+      "task": "Площа кімнат",
+      "is_weekly": false
+    }
+  },
+  {
+    "model": "Task.tasklist",
+    "pk": 4,
+    "fields": {
+      "user": "test_ivanka",
+      "task": "Шахова дошка",
+      "is_weekly": false
+    }
+  }
+]

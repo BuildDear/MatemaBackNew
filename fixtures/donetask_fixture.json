@@ -1,0 +1,35 @@
+[
+  {
+    "model": "Task.donetask",
+    "pk": 3,
+    "fields": {
+      "user": "test_ivanka",
+      "task": "Шахова дошка",
+      "is_done": true,
+      "datetime": "2023-12-18T17:40:48.076Z",
+      "mark": 1
+    }
+  },
+  {
+    "model": "Task.donetask",
+    "pk": 4,
+    "fields": {
+      "user": "test_ivanka",
+      "task": "Шахова дошка",
+      "is_done": true,
+      "datetime": "2023-12-18T20:39:22.691Z",
+      "mark": 5
+    }
+  },
+  {
+    "model": "Task.donetask",
+    "pk": 5,
+    "fields": {
+      "user": "test_ivanka",
+      "task": "Кіко сторін?",
+      "is_done": true,
+      "datetime": "2023-12-18T20:46:05.914Z",
+      "mark": 1
+    }
+  }
+]
