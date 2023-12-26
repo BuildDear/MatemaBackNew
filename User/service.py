@@ -2,11 +2,14 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import default_token_generator
 from django.http import HttpResponse, JsonResponse
 from django.utils.http import urlsafe_base64_decode
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_http_methods
 
 from User.models import User
 
 
+@require_http_methods(["GET"])
+@never_cache
 def activate_account(request, uidb64, token):
     """
     Activate a user account.
