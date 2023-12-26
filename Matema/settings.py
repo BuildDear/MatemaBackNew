@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'drf_yasg',
     'social_django',
     'django_apscheduler',
+    'django_celery_beat',
+    'django_celery_results',
 
     'Statistic',
     'Task',
@@ -205,3 +207,17 @@ GOOGLE_OAUTH2_EXTRA_DATA = ['first_name', 'last_name']
 
 SOCIAL_AUTH_GITHUB_CLIENT_ID = config('SOCIAL_AUTH_GITHUB_CLIENT_ID')
 SOCIAL_AUTH_GITHUB_SECRET = config('SOCIAL_AUTH_GITHUB_SECRET')
+
+# ===     REDIS CREDENTIALS     === #
+
+REDIS_HOST = '0.0.0.0'
+REDIS_PORT = '6379'
+CELERY_BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+
+
+
+
