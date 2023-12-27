@@ -1,24 +1,15 @@
-from django.contrib.auth import get_user_model
-from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files.storage import default_storage
-from django.http import HttpResponse, JsonResponse
-from django.utils.http import urlsafe_base64_decode
 
 from Task.models import Task
 from Task.serializer import TaskSerializer
 from User.serializers import UserPhotoSerializer, UserScoreSerializer
-from django.views.decorators.http import require_http_methods
 
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
-
-from User.models import User
-
-
 
 
 class UserPhotoView(APIView):
