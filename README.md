@@ -35,11 +35,12 @@ cd MatemaBackNew
 docker build -t matema-back-new .
 ```
 
-### Run docker container
+### Run docker-compose
 ```bash
-docker run -d -p 8000:8000 matema-back-new
+docker-compose up
 ```
-After this, the Calendario will be available at http://localhost:8000.
+After this, the MatemaBack will be available at http://localhost:8000.
+Redis will be available at redis://127.0.0.1:6379/0.
 
 
 ### Run celery worker
