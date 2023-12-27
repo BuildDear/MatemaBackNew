@@ -41,8 +41,31 @@ docker run -d -p 8000:8000 matema-back-new
 ```
 After this, the Calendario will be available at http://localhost:8000.
 
+
+### Run celery worker
+```bash
+celery -A Matema worker -l info
+```
+After this, worker must be connected to (broker, transport) redis://127.0.0.1:6379/0 .
+
+
+### Run celery beat (if need)
+```bash
+ celery -A Matema beat -l info
+```
+After this, worker must be connected to (broker) redis://127.0.0.1:6379/0.
+
+
+### Run celery flower (if need)
+```bash
+ celery -A Matema beat -l info
+```
+After this, worker must be connected to (broker) redis://127.0.0.1:6379/0.
+
+
 ## Author
 Matema backenders group
+
 
 ## Contacts
 matema.group@gmail.com
