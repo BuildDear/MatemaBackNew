@@ -14,6 +14,7 @@ Before you begin, you will need the following tools:
 
 - **Python 3.10**
 - **Docker**
+- **Something for testing(Postman or related)**
 
 ## Installation
 
@@ -62,6 +63,11 @@ After this, worker must be connected to (broker) redis://127.0.0.1:6379/0.
  celery -A Matema beat -l info
 ```
 After this, worker must be connected to (broker) redis://127.0.0.1:6379/0.
+
+
+### Swagger documentation of all endpoints(if need)
+
+ http://127.0.0.1:8000/swagger/
 
 
 ## Author
