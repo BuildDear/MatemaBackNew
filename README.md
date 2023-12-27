@@ -12,7 +12,7 @@ new horizons in the field of mathematics.🥰🥰🥰
 
 Before you begin, you will need the following tools:
 
-- **Python 3.11**
+- **Python 3.10**
 - **Docker**
 
 ## Installation
