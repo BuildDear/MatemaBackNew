@@ -5,8 +5,6 @@ services:
     build: .
     volumes:
       - .:/usr/src/app
-    ports:
-      - "8000:8000"
     depends_on:
       - redis
       - db
@@ -27,6 +25,8 @@ services:
       - GOOGLE_OAUTH2_CLIENT_SECRET=${GOOGLE_OAUTH2_CLIENT_SECRET}
       - SOCIAL_AUTH_GITHUB_CLIENT_ID=${SOCIAL_AUTH_GITHUB_CLIENT_ID}
       - SOCIAL_AUTH_GITHUB_SECRET=${SOCIAL_AUTH_GITHUB_SECRET}
+    ports:
+      - "8000:8000"
 
   redis:
     image: redis:latest
@@ -43,6 +43,35 @@ services:
       - POSTGRES_PASSWORD=${SQL_PASSWORD}
     ports:
       - "5432:5432"
+
+  celery_worker:
+    build:
+      context: .
+    entrypoint: celery
+    command: -A Matema worker -l info
+    volumes:
+      - .:/usr/src/app
+    links:
+      - redis
+    depends_on:
+      - web
+      - redis
+
+
+  flower:
+    build:
+      context: .
+    entrypoint: celery
+    command: -A Matema flower
+    volumes:
+      - .:/usr/src/app
+    links:
+      - redis
+    depends_on:
+      - redis
+    ports:
+      - "5555:5555"
+
 
 volumes:
   postgres_data:

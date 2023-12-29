@@ -73,7 +73,7 @@ After this, worker must be connected to (broker) redis://127.0.0.1:6379/0.
 
 ### Run celery flower (if need)
 ```bash
- celery -A Matema beat -l info
+ celery -A Matema flower
 ```
 After this, worker must be connected to (broker) redis://127.0.0.1:6379/0.
 
