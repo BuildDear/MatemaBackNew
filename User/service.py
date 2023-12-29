@@ -46,6 +46,20 @@ def activate_account(request, uidb64, token):
         return HttpResponse('Activation link is invalid!')
 
 
+def cache_user_active(func):
+    cache = {}
+
+    def wrapper(request, username):
+        if username in cache:
+            return cache[username]
+
+        response = func(request, username)
+        cache[username] = response
+        return response
+
+    return wrapper
+
+
 @require_http_methods(["GET"])
 def check_user_active(request, username):
     try:
