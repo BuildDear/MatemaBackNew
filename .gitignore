@@ -74,16 +74,3 @@ db.sqlite3-journal
 
 # Sphinx documentation
 docs/_build/
-
-# PyBuilder
-target/
-<<<<<<< HEAD
-=======
-
-=======
-<<<<<<< HEAD
-target/
-=======
->>>>>>> main
->>>>>>> origin/task
->>>>>>> task
