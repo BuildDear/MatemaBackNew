@@ -60,6 +60,7 @@ def cache_user_active(func):
     return wrapper
 
 
+@cache_user_active
 @require_http_methods(["GET"])
 def check_user_active(request, username):
     try:
