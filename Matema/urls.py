@@ -4,6 +4,7 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from User import views
+from User.service import activate_account
 
 schema_view = get_schema_view(
    openapi.Info(
@@ -18,13 +19,14 @@ schema_view = get_schema_view(
    permission_classes=[permissions.AllowAny],
 )
 
+
 urlpatterns = [
     # Project URLs
     path('admin/', admin.site.urls),
     path('auth/', include('djoser.urls')),
     path('auth/', include('djoser.urls.jwt')),
     path('auth/', include('djoser.social.urls')),
-    path('auth/verify/<uidb64>/<token>/', views.activate_account, name='activate_account'),
+    path('auth/verify/<uidb64>/<token>/', activate_account, name='activate_account'),
     path('manager/', include('Manager.urls')),
     path('user/', include('User.urls')),
     path('task/', include('Task.urls')),

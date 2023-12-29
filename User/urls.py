@@ -1,6 +1,7 @@
 from django.urls import path
-from User.views import UserPhotoView, check_user_active, \
+from User.views import UserPhotoView, \
     UserScoreView, UserGetTaskView
+from User.service import check_user_active
 
 urlpatterns = [
 
