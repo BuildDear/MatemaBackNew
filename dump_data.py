@@ -15,6 +15,7 @@ def dump_model_data(model, filename):
         file.write(data)
 
 
+
 # Виклик функції для кожної моделі
 dump_model_data(TypeAnswer, 'typeanswer_fixture.json')
 dump_model_data(Theme, 'theme_fixture.json')
