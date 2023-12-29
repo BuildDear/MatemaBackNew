@@ -1,0 +1,48 @@
+[
+
+  {
+    "model": "Task.theme",
+    "pk": "Периметр фігур",
+    "fields": {}
+  },
+  {
+    "model": "Task.theme",
+    "pk": "Площа фігур",
+    "fields": {}
+  },
+  {
+    "model": "Task.theme",
+    "pk": "Системи числення",
+    "fields": {}
+  },
+  {
+    "model": "Task.theme",
+    "pk": "Многокутники",
+    "fields": {}
+  },
+  {
+    "model": "Task.theme",
+    "pk": "Тригонометрія",
+    "fields": {}
+  },
+  {
+    "model": "Task.theme",
+    "pk": "На логіку",
+    "fields": {}
+  },
+  {
+    "model": "Task.theme",
+    "pk": "Логарифми",
+    "fields": {}
+  },
+  {
+    "model": "Task.theme",
+    "pk": "Рівняння",
+    "fields": {}
+  },
+  {
+    "model": "Task.theme",
+    "pk": "Нерівності",
+    "fields": {}
+  }
+]
