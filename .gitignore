@@ -4,10 +4,6 @@ Matema/.idea
 user_photos/
 task_photos/
 
-celerybeat-schedule.bak
-celerybeat-schedule.dir
-celerybeat-schedule.dat
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
