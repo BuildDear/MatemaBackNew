@@ -12,8 +12,7 @@ from drf_yasg import openapi
 
 
 class TaskView(APIView):
-    permission_classes = (AllowAny,)
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         # Retrieve all tasks from the database
