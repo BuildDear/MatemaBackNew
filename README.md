@@ -36,10 +36,16 @@ cd MatemaBackNew
 docker build -t matema-back-new .
 ```
 
+### Build docker-compose
+```bash
+docker-compose build
+```
+
 ### Run docker-compose
 ```bash
 docker-compose up
 ```
+
 After this, the MatemaBack will be available at http://localhost:8000.
 Redis will be available at redis://127.0.0.1:6379/0.
 
