@@ -31,6 +31,13 @@ git clone https://github.com/BuildDear/MatemaBackNew.git
 cd MatemaBackNew
 ```
 
+### Configure Environment Variables
+```bash
+cp .env.example .env
+```
+
+#### Transfer .env into Matema app
+
 ### Build docker image
 ```bash
 docker build -t matema-back-new .
