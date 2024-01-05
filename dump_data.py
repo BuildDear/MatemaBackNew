@@ -14,7 +14,11 @@ def dump_model_data(model, filename):
     with open(f'fixtures/{filename}', 'w', encoding='utf-8') as file:
         file.write(data)
 
+<<<<<<< HEAD
 
+
+=======
+>>>>>>> 849b972 (redolve conflict with uploading files on merging with dev)
 # Виклик функції для кожної моделі
 dump_model_data(TypeAnswer, 'typeanswer_fixture.json')
 dump_model_data(Theme, 'theme_fixture.json')

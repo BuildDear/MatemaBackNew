@@ -12,6 +12,11 @@ __pycache__/
 # C extensions
 *.so
 
+/celerybeat-schedule.dat
+/celerybeat-schedule.dir
+/celerybeat-schedule.bak
+
+
 # Distribution / packaging
 .Python
 env/
@@ -69,16 +74,3 @@ db.sqlite3-journal
 
 # Sphinx documentation
 docs/_build/
-
-# PyBuilder
-target/
-<<<<<<< HEAD
-=======
-
-=======
-<<<<<<< HEAD
-target/
-=======
->>>>>>> main
->>>>>>> origin/task
->>>>>>> task

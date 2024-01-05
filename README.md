@@ -12,8 +12,9 @@ new horizons in the field of mathematics.🥰🥰🥰
 
 Before you begin, you will need the following tools:
 
-- **Python 3.11**
+- **Python 3.10**
 - **Docker**
+- **Something for testing(Postman or related)**
 
 ## Installation
 
@@ -30,19 +31,61 @@ git clone https://github.com/BuildDear/MatemaBackNew.git
 cd MatemaBackNew
 ```
 
+### Configure Environment Variables
+```bash
+cp .env.example .env
+```
+
+#### Transfer .env into Matema app
+
 ### Build docker image
 ```bash
 docker build -t matema-back-new .
 ```
 
-### Run docker container
+### Build docker-compose
 ```bash
-docker run -d -p 8000:8000 matema-back-new
+docker-compose build
 ```
-After this, the Calendario will be available at http://localhost:8000.
+
+### Run docker-compose
+```bash
+docker-compose up
+```
+
+After this, the MatemaBack will be available at http://localhost:8000.
+Redis will be available at redis://127.0.0.1:6379/0.
+
+
+### Run celery worker
+```bash
+celery -A Matema worker -l info
+```
+After this, worker must be connected to (broker, transport) redis://127.0.0.1:6379/0 .
+
+
+### Run celery beat (if need)
+```bash
+ celery -A Matema beat -l info
+```
+After this, worker must be connected to (broker) redis://127.0.0.1:6379/0.
+
+
+### Run celery flower (if need)
+```bash
+ celery -A Matema flower
+```
+After this, worker must be connected to (broker) redis://127.0.0.1:6379/0.
+
+
+### Swagger documentation of all endpoints(if need)
+
+ http://127.0.0.1:8000/swagger/
+
 
 ## Author
 Matema backenders group
+
 
 ## Contacts
 matema.group@gmail.com
