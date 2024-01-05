@@ -8,7 +8,6 @@ from django.views.decorators.http import require_http_methods
 from User.models import User
 
 
-
 @never_cache
 @require_http_methods(["GET"])
 def activate_account(request, uidb64, token):
